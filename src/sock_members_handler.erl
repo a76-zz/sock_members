@@ -5,8 +5,7 @@
 -export([start_link/0]).
 
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
-	 terminate/2, code_change/3]).start_link() ->
-	gen_server:start_link(?MODULE, [], []).
+	 terminate/2, code_change/3]).
 
 -define(SERVER, ?MODULE).
 
@@ -28,18 +27,36 @@ init([]) ->
         [{port, Port}],
         [{env, [{dispatch, Dispatch}]}]
     ),
+    error_logger:info_msg(" [*] Running at http://localhost:~p~n", [Port]), 
     {ok, []}.
 
 terminate(_Reason, _State) ->
 	cowboy:stop_listener(cowboy_members_http_listener).
 
-service_members(_Conn, init, State) -> {ok, State};
-service_members(Conn, {recv, Request}, State) ->
-	Response = amqp_rpc_client:call(Client, Request),
-	Conn:send(Response);
+service_members(Conn, init, State) -> 
+    error_logger:info_msg("init: ~p~n", [Conn]),
+    sock_members_pub:register(Conn), 
+    {ok, State};
 
-service_members(_Conn, {info, _Info}, State) -> {ok, State};
-service_members(_Conn, closed, State) -> {ok, State}.
+service_members(Conn, {recv, Request}, State) ->
+	Response = sock_members_search:search(Request), 
+    error_logger:info_msg("search response: ~p~n", [Response]), 
+    case Response of 
+        {ok, {search_results, Data, MaxScore, NumFound}} -> 
+            Conn:send(jsx:encode(Data));
+        _ ->
+            error_logger:error_msg("unexpected search response: ~p~n", [Response])
+    end; 
+
+service_members(Conn, {info, _Info}, State) -> 
+    error_logger:info_msg("info: ~p~n", [Conn]), 
+    {ok, State};
+
+
+service_members(Conn, closed, State) -> 
+    %error_logger:info_msg("close: ~p~n", [Conn]),
+    sock_members_pub:unregister(Conn), 
+    {ok, State}.
 
 handle_call(_Msg, _From, State) ->
     {noreply, State}.

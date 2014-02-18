@@ -23,7 +23,11 @@ start_link() ->
 %% ===================================================================
 
 init([]) ->
-    Children = [?CHILD(sock_members_server, worker)],
+    Children = [
+        ?CHILD(sock_members_pub, worker),
+        ?CHILD(sock_members_search, worker),
+        ?CHILD(sock_members_handler, worker)
+    ],
 	RestartStrategy = {one_for_one, 0, 1},
 	{ok, {RestartStrategy, Children}}.
 
