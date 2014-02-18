@@ -28,8 +28,9 @@ init([]) ->
               {mimetypes, [
                   {<<".css">>, [<<"text/css">>]}
                ]}]},
-        {"/ember", static_handler, ["index.html"]},
-        {"/", static_handler, ["members.html"]}
+        {"/sock", static_handler, ["members.html"]},
+        {"/", static_handler, ["index.html"]}
+        
     ],
     Routes = [{'_',  VhostRoutes}], % any vhost
     Dispatch = cowboy_router:compile(Routes),
