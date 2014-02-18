@@ -4,11 +4,15 @@
 		 handle/2, 
 		 terminate/3]).
 
-init({_Any, http}, Req, []) ->
-    {ok, Req, []}.
+
+init({_Any, http}, Req, [FileName]) ->
+    {ok, Req, [FileName]}.
 
 handle(Req, State) ->
-    {ok, Data} = file:read_file("./priv/members.html"),
+    error_logger:info_msg("requested: ~p~n", [Req]), 
+    [FileName] = State,
+    
+    {ok, Data} = file:read_file(string:concat("./priv/", FileName)),
     {ok, Req1} = cowboy_req:reply(200, [{<<"Content-Type">>, "text/html"}],
                                        Data, Req),
     {ok, Req1, State}.

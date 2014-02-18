@@ -17,7 +17,19 @@ init([]) ->
         <<"/members">>, fun service_members/3, [], []),
     VhostRoutes = [
     	{<<"/members/[...]">>, sockjs_cowboy_handler, SockjsState},
-        {'_', static_handler, []}
+        
+        {"/js/[...]", cowboy_static,
+             [{directory, {priv_dir, sock_members, [<<"js">>]}},
+              {mimetypes, [
+                  {<<".js">>, [<<"application/javascript">>]}
+               ]}]},
+        {"/css/[...]", cowboy_static,
+             [{directory, {priv_dir, sock_members, [<<"css">>]}},
+              {mimetypes, [
+                  {<<".css">>, [<<"text/css">>]}
+               ]}]},
+        {"/ember", static_handler, ["index.html"]},
+        {"/", static_handler, ["members.html"]}
     ],
     Routes = [{'_',  VhostRoutes}], % any vhost
     Dispatch = cowboy_router:compile(Routes),
