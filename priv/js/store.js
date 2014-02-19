@@ -75,11 +75,11 @@ Members.Store = DS.Store.extend({
 
             var getData = function(response) {
                 var result = [],
-                members = response.data.members;
+                members = response.data;
 
-                if (members && !members.length) {
+                /*if (members && !members.length) {
                     members = [members];
-                }
+                }*/
 
                 if (members) {
                     for(var index = 0; index < members.length; ++index) {

@@ -56,7 +56,8 @@ service_members(Conn, {recv, Request}, State) ->
     error_logger:info_msg("search response: ~p~n", [Response]), 
     case Response of 
         {ok, {search_results, Data, MaxScore, NumFound}} -> 
-            Conn:send(jsx:encode([{<<"uuid">>, Id}, {<<"data">>, Data}]));
+            {_, Members} = lists:unzip(Data),
+            Conn:send(jsx:encode([{<<"uuid">>, Id}, {<<"data">>, Members}]));
         _ ->
             error_logger:error_msg("unexpected search response: ~p~n", [Response])
     end; 
