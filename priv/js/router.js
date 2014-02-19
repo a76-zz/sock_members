@@ -4,6 +4,6 @@ Members.Router.map(function() {
 
 Members.MembersRoute = Ember.Route.extend({
 	model: function () {
-		return this.store.find('member');
+		return []; //this.store.find('member');
 	}
 });

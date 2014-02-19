@@ -1,72 +1,46 @@
-<!doctype html>
-<html><head>
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js">
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Members</title>
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <script type="text/x-handlebars" data-template-name="members">
+    <h2>Our Members</h2>
+    <h3>Filtered by:</h3>
+    <div>
+      {{input type="text" id="first_name_filter" placeholder="First Name" value=first_name action="filter"}}
+    </div>
+    {{#unless isEmpty}}
+      <h3>Searh result:</h3>
+      <table>
+        <thead>
+          <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+          </tr>
+        </thead>
+      {{#each}}
+        <tr>
+          <td>{{first_name_s}}</td>
+          <td>{{last_name_s}}</td>
+        </tr>
+      {{/each}}
+      </table>
+    {{/unless}}
   </script>
-  <script src="http://cdn.sockjs.org/sockjs-0.2.min.js">
-  </script>
-  <style>
-      .box {
-          border: 1px dashed black;
-          border-radius: 4px;
-          -moz-border-radius: 4px;
-          width: 400px;
-          display: block;
-          height: 300px;
-          float: left;
-      }
-      #output {
-          border-color: grey;
-          overflow:auto;
-      }
-      #input {
-          vertical-align: text-top;
-          -moz-outline-style: none;
-          outline-style: none;
-          outline-width: 0px;
-          outline-color: -moz-use-text-color;
-      }
-      body {
-          background-color: #F0F0F0;
-      }
-  </style>
-</head><body lang="en">
-    <h2>SockJS-erlang Echo example</h2>
-    <form id="form">
-      <input id="input" autocomplete="off" class="box"
-             value="type something here" />
-    </form>
-    <div id="output" class="box"></div>
-    <script>
-      function log(m) {
-          $('#output').append($("<code>").text(m));
-          $('#output').append($("<br>"));
-          $('#output').scrollTop($('#output').scrollTop()+10000);
-      }
 
-      var sockjs_url = '/members';
-      var sockjs = new SockJS(sockjs_url);
-      sockjs.onopen = function() {
-          log(' [*] Connected (using: '+sockjs.protocol+')');
-      };
-      sockjs.onclose = function(e) {
-          log(' [*] Disconnected ('+e.status + ' ' + e.reason+ ')');
-      };
-      sockjs.onmessage = function(e) {
-          log(' [ ] received: ' + JSON.stringify(e.data));
-      };
-
-      $('#input').focus();
-      $('#form').submit(function() {
-          var val = $('#input').val();
-          $('#input').val('');
-          var l = ' [ ] sending: ' + JSON.stringify(val);
-          if (sockjs.readyState !== SockJS.OPEN) {
-              l += ' (error, connection not established)';
-          } else {
-              sockjs.send(val);
-          }
-          log(l);
-          return false;
-      });
-    </script>
-</body></html>
+  <script src="js/libs/jquery-1.10.2.js"></script>
+  <script src="js/libs/handlebars-1.1.2.js"></script>
+  <script src="js/libs/ember-1.4.0.js"></script>
+  <script src="js/libs/ember-data.js"></script>
+  <script src="js/libs/sockjs-0.2.js"></script>
+  <script src="js/application.js"></script>
+  <script src="js/store.js"></script>
+  <script src="js/router.js"></script>
+  <script src="js/models/member.js"></script>
+  <script src="js/controllers/members_controller.js"></script>
+</body>
+</html>

@@ -28,9 +28,7 @@ init([]) ->
               {mimetypes, [
                   {<<".css">>, [<<"text/css">>]}
                ]}]},
-        {"/sock", static_handler, ["members.html"]},
-        {"/", static_handler, ["index.html"]}
-        
+        {"/", static_handler, ["members.html"]}
     ],
     Routes = [{'_',  VhostRoutes}], % any vhost
     Dispatch = cowboy_router:compile(Routes),
@@ -52,11 +50,13 @@ service_members(Conn, init, State) ->
     {ok, State};
 
 service_members(Conn, {recv, Request}, State) ->
-	Response = sock_members_search:search(Request), 
+    error_logger:info_msg("request: ~p~n", [Request]),
+    [{<<"uuid">>, Id}, {<<"data">>, Query}] = jsx:decode(Request), 
+	Response = sock_members_search:search(Query), 
     error_logger:info_msg("search response: ~p~n", [Response]), 
     case Response of 
         {ok, {search_results, Data, MaxScore, NumFound}} -> 
-            Conn:send(jsx:encode(Data));
+            Conn:send(jsx:encode([{<<"uuid">>, Id}, {<<"data">>, Data}]));
         _ ->
             error_logger:error_msg("unexpected search response: ~p~n", [Response])
     end; 
