@@ -9,7 +9,6 @@ init({_Any, http}, Req, [FileName]) ->
     {ok, Req, [FileName]}.
 
 handle(Req, State) ->
-    error_logger:info_msg("requested: ~p~n", [Req]), 
     [FileName] = State,
     
     {ok, Data} = file:read_file(string:concat("./priv/", FileName)),

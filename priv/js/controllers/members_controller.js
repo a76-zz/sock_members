@@ -14,8 +14,21 @@ Members.MembersController = Ember.ArrayController.extend({
 			});
 		}
 	},
+
 	isEmpty: function() {
 		var length = this.get('model.length');
         return length === 0;
-	}.property('model.length')
+	}.property('model.length'),
+
+	updates: [],
+
+	update: function(members) {
+		for (var index=0; index < data.length; ++index) {
+			this.get('updates').push(members[index]);
+		}
+	},
+
+    allUpdates: function() {
+    	return this.get('updates');
+    }.property('updates.@each')
 });

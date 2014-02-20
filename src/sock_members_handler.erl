@@ -57,7 +57,7 @@ service_members(Conn, {recv, Request}, State) ->
     case Response of 
         {ok, {search_results, Data, MaxScore, NumFound}} -> 
             {_, Members} = lists:unzip(Data),
-            Conn:send(jsx:encode([{<<"uuid">>, Id}, {<<"data">>, Members}]));
+            Conn:send(jsx:encode([{<<"action">>, <<"rpc">>}, {<<"uuid">>, Id}, {<<"data">>, Members}]));
         _ ->
             error_logger:error_msg("unexpected search response: ~p~n", [Response])
     end; 
