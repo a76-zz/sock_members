@@ -1,7 +1,7 @@
 Members.MembersController = Ember.ArrayController.extend({
 	actions: {
 		filter: function() {
-			var first_name = this.get('first_name').trim(),
+			var first_name = this.get('first_name'),
 			query = "*";
 			
 			if (first_name) {
