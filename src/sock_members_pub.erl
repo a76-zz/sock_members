@@ -16,7 +16,10 @@ register(Conn) ->
 	gen_server:call(?SERVER, {register, Conn}).
 
 unregister(Conn) ->
-	gen_server:call(?SERVER, {unregister, Conn}).
+    case erlang:whereis(?SERVER) of
+        undefined -> ok;
+        _Pid -> gen_server:call(?SERVER, {unregister, Conn})
+    end.
 
 init([]) ->
 	ets:new(sock_connections, [set, named_table]),
@@ -28,9 +31,11 @@ terminate(_Reason, _State) ->
 handle_call(Msg, _From, State) ->
     case Msg of 
     	{register, Conn} ->
-    		ets:insert(sock_connections, Conn);
+            {sockjs_session, {Pid, _}} = Conn,
+    		ets:insert(sock_connections, {Pid, Conn});
     	{unregister, Conn} ->
-    		ets:delete(sock_connections, Conn)
+            {sockjs_session, {Pid, _}} = Conn,
+    		ets:delete(sock_connections, Pid)
     end,
     {reply, ok, State}.
 
