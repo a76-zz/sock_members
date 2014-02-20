@@ -44,7 +44,8 @@ Members.SocketEndpoint = {
             }
 
             if (response.action === 'update') {
-                Members.MembersController.update(data);
+
+                Members.MembersControllerInstance.update(data);
             }
         };
 

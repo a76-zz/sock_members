@@ -30,6 +30,11 @@
       {{/each}}
       </table>
     {{/unless}}
+    <h3>Updates:</h3>
+    {{#each allUpdates}}
+       <div>{{first_name_s}}</div>
+    {{/each}}
+
   </script>
 
   <script src="js/libs/jquery-1.10.2.js"></script>
@@ -38,10 +43,11 @@
   <script src="js/libs/ember-data.js"></script>
   <script src="js/libs/sockjs-0.2.js"></script>
   <script src="js/application.js"></script>
+  <script src="js/controllers/members_controller.js"></script>
   <script src="js/socket.js"></script>
   <script src="js/store.js"></script>
   <script src="js/router.js"></script>
   <script src="js/models/member.js"></script>
-  <script src="js/controllers/members_controller.js"></script>
+  
 </body>
 </html>

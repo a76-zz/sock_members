@@ -21,6 +21,9 @@ unregister(Conn) ->
         _Pid -> gen_server:call(?SERVER, {unregister, Conn})
     end.
 
+% test 
+% jsx:encode([{<<"action">>, <<"update">>},{<<"data">>,[[{<<"id_i">>, <<"1">>},{<<"first_name_s">>,<<"bob">>}]]}]).
+
 broadcast(Data) ->
     gen_server:call(?SERVER, {broadcast, Data}).
 

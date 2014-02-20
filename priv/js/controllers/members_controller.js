@@ -21,13 +21,11 @@ Members.MembersController = Ember.ArrayController.extend({
 	}.property('model.length'),
 
 	updates: [],
-
 	update: function(members) {
-		for (var index=0; index < data.length; ++index) {
-			this.get('updates').push(members[index]);
+		for (var index=0; index < members.length; ++index) {
+			this.get('updates').pushObject(members[index]);
 		}
 	},
-
     allUpdates: function() {
     	return this.get('updates');
     }.property('updates.@each')

@@ -4,6 +4,7 @@ Members.Router.map(function() {
 
 Members.MembersRoute = Ember.Route.extend({
 	model: function () {
+		Members.MembersControllerInstance = this.controllerFor('members');
 		return []; //this.store.find('member');
 	}
 });
