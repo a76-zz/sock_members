@@ -12,6 +12,9 @@ Members.CreateSocket = function() {
     sockjs.onclose = function(e) {
         console.log(' [*] Disconnected ('+e.status + ' ' + e.reason+ ')');
     };
+    sockjs.oninfo = function(e) {
+        console.log(' [*] Info ('+e +')');
+    };
 
     return sockjs;
 };
@@ -95,6 +98,7 @@ Members.Store = DS.Store.extend({
             };
             
             sockjs.onmessage = function(e) {
+                console.log(e);
                 var response = JSON.parse(e.data);
                 
                 var data = getData(response);
