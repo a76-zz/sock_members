@@ -26,7 +26,8 @@ init([]) ->
     Children = [
         ?CHILD(sock_members_pub, worker),
         ?CHILD(sock_members_search, worker),
-        ?CHILD(sock_members_handler, worker)
+        ?CHILD(sock_members_handler, worker),
+        ?CHILD(sock_members_sync_handler, worker)
     ],
 	RestartStrategy = {one_for_one, 0, 1},
 	{ok, {RestartStrategy, Children}}.

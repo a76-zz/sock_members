@@ -9,7 +9,7 @@ Members.MembersController = Ember.ArrayController.extend({
 			}
             
             var context = this;
-			return this.store.findQuery('member', query).then(function(data) {
+			return Members.Endpoint.send('members', query).then(function(data) {
 				context.set('model', data);
 			});
 		}

@@ -22,7 +22,7 @@ unregister(Conn) ->
     end.
 
 % test 
-% jsx:encode([{<<"action">>, <<"update">>},{<<"data">>,[[{<<"id_i">>, <<"1">>},{<<"first_name_s">>,<<"bob">>}]]}]).
+% jsx:encode([{<<"action">>, <<"sync_update">>},{<<"data">>,[[{<<"id_i">>, <<"1">>},{<<"first_name_s">>,<<"bob">>}]]}]).
 
 broadcast(Data) ->
     gen_server:call(?SERVER, {broadcast, Data}).
