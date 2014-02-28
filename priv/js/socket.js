@@ -43,7 +43,7 @@ Members.SocketEndpoint = {
                 context.requests[response.uuid] = undefined;
             }
 
-            if (response.action === 'update') {
+            if (response.action === 'sync_update') {
 
                 Members.MembersControllerInstance.update(data);
             }
