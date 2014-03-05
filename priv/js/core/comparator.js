@@ -1,4 +1,6 @@
-if (typeof define !== 'function') { var define = require('/usr/local/lib/node_modules/amdefine')(module) }
+if (typeof define !== 'function') { 
+    var define = require('/usr/local/lib/node_modules/amdefine')(module); 
+}
 
 define({
     __create: function (state) {

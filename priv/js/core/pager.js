@@ -1,41 +1,39 @@
-if (typeof define !== 'function') { var define = require('/usr/local/lib/node_modules/amdefine')(module) }
+if (typeof define !== 'function') { 
+    var define = require('/usr/local/lib/node_modules/amdefine')(module); 
+}
 
 define({
-    __create:function(state, target) {
+    __create:function (state, target) {
         var context = this,
             state = state || { frame: 0, count: function () { return 0; }  },
             target = target || {};
 
-        target.pages = function(page_size, current) {
+        target.pages = function (page_size, current) {
             return context.pages(state, page_size, current);
         };
-
-        target.page_count = function(page_size) {
+        target.page_count = function (page_size) {
             return context.page_count(state, page_size);
         };
-
-        target.data = function(page_size, current) {
+        target.data = function (page_size, current) {
             return context.data(state, page_size, current);
         };
-
-        target.range = function(page_size, current) {
+        target.range = function (page_size, current) {
             return context.range(state, page_size, current);
         };
-
-        target.contains = function(page_size, current) {
+        target.contains = function (page_size, current) {
             return context.contains(state, page_size, current);
         };
 
         return target;
     },
-    page_count: function(that, page_size) {
+    page_count: function (that, page_size) {
         var count = that.count();
         var remainder = count % page_size;
         var whole = (count - remainder) / page_size;
 
         return remainder > 0 ? whole + 1 : whole;
     },
-    pages: function(that, page_size, current) {
+    pages: function (that, page_size, current) {
         var result = [],
         left,
         right,
@@ -79,7 +77,7 @@ define({
 
         return result;
     },
-    range: function(that, page_size, current) {
+    range: function (that, page_size, current) {
         var to = current * page_size,
         count = that.count();
 
@@ -89,11 +87,11 @@ define({
 
         return { from: (current - 1) * page_size, to: to };
     },
-    data: function(that, page_size, current) {
+    data: function (that, page_size, current) {
         var range = this.range(that, page_size, current);
         return that.read(range);
     },
-    contains: function(that, page_size, current) {
+    contains: function (that, page_size, current) {
         var range = this.range(that, page_size, current);
         return that.contains(range);
     }
