@@ -3,34 +3,52 @@ if (typeof define !== 'function') {
 }
 
 define({
-    __create: function (state) {
-        var context = this,
-        state = state || { value: function(current) { return 0; }, asc: false },
-        target = target || {};
+    __create: function (target) {
+        var context = this, 
+            target = target || {};
 
-        target.execute = function (data) {
-            return context.sort(state, data);
+        target.execute = function (sorter, data) {
+            return context.sort(sorter, data);
+        }
+        target.position = function (sorter, data, value) {
+            return context.position(sorter, data, value);
         };
-
         return target;
     },
-    asc_sorter: function (that, a, b) {
-    	return that.value(a) > that.value(b) ? 1 : -1;
+    asc_sorter: function (sorter, a, b) {
+        return sorter.value(a) > sorter.value(b) ? 1 : -1;
     },
-    desc_sorter: function (that, a, b) {
-        return that.value(a) < that.value(b) ? 1 : -1;
+    desc_sorter: function (sorter, a, b) {
+        return sorter.value(a) < sorter.value(b) ? 1 : -1;
     },
-    sort: function (that, data) {
+    sort: function (sorter, data) {
         var type = this;
 
-        if (that.asc) {
-        	return data.sort(function (a, b) {
-        		return type.asc_sorter(that, a, b);
-        	});
+        if (sorter.asc) {
+            return data.sort(function (a, b) {
+                return type.asc_sorter(sorter, a, b);
+            });
         } else {
-        	return data.sort(function (a, b) {
-        		return type.desc_sorter(that, a, b);
-        	});
+            return data.sort(function (a, b) {
+                return type.desc_sorter(sorter, a, b);
+            });
         }
+    },
+    position: function (sorter, data, value) {
+        var position = 0;
+
+        if (sorter.asc) {
+            while (position < data.length && 
+                  (sorter.value(data[position]) < sorter.value(value))) {
+                position = position + 1;
+            }
+        } else {
+            while (position < data.length &&
+                  (sorter.value(data[position]) > sorter.value(value))) {
+                position = position + 1;
+            }
+        }
+
+        return position;
     }       
 });

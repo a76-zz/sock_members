@@ -3,15 +3,10 @@ if (typeof define !== 'function') {
 }
 
 define({
-    __create: function (state) {
-        var context = this,
-            state = state || { filter: {} },
-            target = target || {};
+    __create: function (target) {
+        var target = target || {};
 
-        target.narrower = function (filter) {
-            return context.narrower(state.filter, filter);
-        };
-
+        target.narrower = this.narrower;
         return target;
     },
     narrower: function (current, requested) {

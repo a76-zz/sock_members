@@ -14,7 +14,6 @@ Members.MembersController = Ember.ArrayController.extend({
 			});
 		}
 	},
-
 	isEmpty: function() {
 		var length = this.get('model.length');
         return length === 0;

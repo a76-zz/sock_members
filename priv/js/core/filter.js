@@ -3,15 +3,13 @@ if (typeof define !== 'function') {
 }
 
 define({
-    __create: function (state, target) {
+    __create: function (target) {
         var context = this,
-            state = state || { filter: {} },
             target = target || {};
         
-        target.execute = function (data) {
-            return context.execute(state, data)
+        target.execute = function (filter, data) {
+            return context.execute(filter, data);
         };
-
         return target;
     },
     include: function (filter, current) {
@@ -41,11 +39,10 @@ define({
         return true;
     },
 
-    execute: function (that, data) {
+    execute: function (filter, data) {
         var current,
             index,
-            result = [],
-            filter = that.filter;
+            result = [];
 
         if (filter !== undefined) {
             for (index = 0; index < data.length; index++) {

@@ -39,8 +39,6 @@ buster.testCase("data point simple test", {
 
                 target.to_data = context.to_data;
                 target.get = function (t) {
-                	console.log("get");
-                	console.log(t);
                 	context.get(target, t);
                 };
 
@@ -50,20 +48,25 @@ buster.testCase("data point simple test", {
                 return response;
 	    	},
 	    	get: function (target, t) {
-                console.log(target);
                 var data = filter_proto.__create(t).execute(buffer); 
                 target.emit({
-                	name: 'success',
+                	name: 'get',
                 	request: t.request,
                 	response: { total: data.length, data: data}
                 });  
+	    	},
+	    	update: function (target, data) {
+	    		target.emit({
+	    			name: 'udate',
+	    			data: data
+	    		});
 	    	}
 	    };
 
 		var p = data_point_proto.__create({
 			sort: sort,
 			requestor: requestor.__create()
-		}).on('success', function (result) {
+		}).on('get', function (result) {
             snapshot = result;
 		});
 
