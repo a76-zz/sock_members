@@ -20,7 +20,8 @@ define(function (require) {
             state.comparator = comparator_proto.__create();
 
             state.requestor.on('get', function (event) {
-                context.get(state, target, event);
+                state.cache = state.requestor.to_data(event.response).data;
+                target.emit(this.c_snapshot(state, 0));
             });
             state.requestor.on('update', function (event) {
                 context.update(state, target, event);
@@ -50,10 +51,19 @@ define(function (require) {
             }
         },
         sort: function (state, target, sortering) {
+            var data = state.l2cache || state.cache,
+                result;
+
             state.sortering = sortering;
 
-            if (state.cache) {
-                state.cache = state.sorter.execute(sortering, state.cache);
+            if (data) {
+                result = state.sorter.execute(sortering, data);
+
+                if (state.l2cache) {
+                    state.l2cache = result;
+                } else {
+                    state.cache = result;
+                }
                 target.emit(this.c_snapshot(state, 2));
             } else {
                 this.s_run(state);
@@ -65,21 +75,16 @@ define(function (require) {
             state.l2cache = state.sorter.execute(state.sortering, data);
             state.l2filtering = filtering;
 
-            target.emit(this.c_snapshot({
-                filtering: filtering,
-                sortering: state.sortering,
-                cache: state.l2cache
-            }, 2));
+            target.emit(state, 2));
         },
         s_filter: function (state, target, filtering) {
             state.filter = filter;
 
             delete state.cache;
+            delete state.l2cache;
+            delete state.l2filtering;
+
             this.s_run(state);
-        },
-        get: function (state, target, event) {
-            state.cache = state.requestor.to_data(event.response).data;
-            target.emit(this.c_snapshot(state, 0));
         },
         update: function (sate, target, event) {
             var filtering = state.l2filering || state.filtering,
@@ -105,9 +110,9 @@ define(function (require) {
         c_snapshot: function (state, mode) {
             return {
                 name: 'get',
-                filtering: state.filtering,
                 sortering: state.sortering,
-                data: state.cache,
+                filtering: state.l2filtering || state.filtering,
+                data: state.l2cache || state.cache,
                 mode: mode
             };
         }
