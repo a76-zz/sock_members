@@ -13,11 +13,9 @@ buster.testCase("filter test", {
             { a: 'tbz', b: 'qwp'}
         ];
 
-        var f = filter.__create({
-        	filter: { a: 'abc'}
-        });
+        var f = filter.__create();
 
-        var r = f.execute(data);
+        var r = f.execute({a: 'abc'}, data);
         
         assert.equals(r.length, 1);
         assert.equals(r[0].a, 'abc');
@@ -28,30 +26,13 @@ buster.testCase("filter test", {
             { a: 3, b: true }
         ];
 
-        f = filter.__create({
-            filter: { a: 1 }
-        });
-
-        r = f.execute(data);
+        r = f.execute({a: 1}, data);
 
         assert.equals(r.length, 1);
         assert.equals(r[0].a, 1);
 
-        f = filter.__create({
-            filter: { a: 1, b: false }
-        });
-
-        r = f.execute(data);
+        r = f.execute({ a: 1, b: false }, data);
 
         assert.equals(r.length, 0);
-  
-        r = filter.__create({
-           filter: { a: "abc" }
-        }).execute([
-            { a: "ab" },
-            { a: "abc" }
-        ]);
-    
-        assert.equals(r.length, 1);
     }
 });

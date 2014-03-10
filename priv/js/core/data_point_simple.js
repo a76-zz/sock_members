@@ -21,10 +21,7 @@ define(function (require) {
 
             state.requestor.on('get', function (event) {
                 state.cache = state.requestor.to_data(event.response).data;
-                target.emit(this.c_snapshot(state, 0));
-            });
-            state.requestor.on('update', function (event) {
-                context.update(state, target, event);
+                target.emit(context.c_snapshot(state, 0));
             });
 
             target.f_mode = function (filtering) {
@@ -75,10 +72,10 @@ define(function (require) {
             state.l2cache = state.sorter.execute(state.sortering, data);
             state.l2filtering = filtering;
 
-            target.emit(state, 2));
+            target.emit(state, 2);
         },
         s_filter: function (state, target, filtering) {
-            state.filter = filter;
+            state.filtering = filtering;
 
             delete state.cache;
             delete state.l2cache;
@@ -86,25 +83,10 @@ define(function (require) {
 
             this.s_run(state);
         },
-        update: function (sate, target, event) {
-            var filtering = state.l2filering || state.filtering,
-                cache = state.l2cache || state.cache,
-                internal = state.filter.execute(state.filtering, event.data),
-                internal_item,
-                position;
-
-
-            if (internal.length > 0) {
-                for (var index = 0; index < internal.length; ++index) {
-                    internal_item = internal[index];
-                    position = state.sorter.position(state.sortering, state.cache)
-                }
-            }
-        },
         s_run: function (state) {
             state.requestor.get({
-                filter: state.filter,
-                sort: state.sort
+                filtering: state.filtering,
+                sortering: state.sortering
             });
         },
         c_snapshot: function (state, mode) {

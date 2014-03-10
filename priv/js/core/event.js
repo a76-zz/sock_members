@@ -8,10 +8,8 @@ define({
             state = state || {},
             target = target || {};
 
-        if (!state.handlers) {
-            state.handlers = [];
-        }
-
+        state.handlers = [];
+        
         target.emit = function (event) {
             context.emit(state, event);
             return target;
@@ -25,13 +23,19 @@ define({
         return target;
     },
     emit: function (state, event) {
-        var handler = state.handlers[event.name];
+        var handlers = state.handlers[event.name];
 
-        if (handler) {
-            handler(event);
+        if (handlers) {
+            for (var index = 0; index < handlers.length; ++index) {
+               handlers[index](event);
+            }
         }
     },
     on: function (state, name, handler) {
-        state.handlers[name] = handler;
+        if (state.handlers[name] === undefined) {
+            state.handlers[name] = [];
+        }
+
+        state.handlers[name].push(handler);
     }
 });

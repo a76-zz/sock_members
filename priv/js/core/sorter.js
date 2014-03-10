@@ -33,22 +33,5 @@ define({
                 return type.desc_sorter(sorter, a, b);
             });
         }
-    },
-    position: function (sorter, data, value) {
-        var position = 0;
-
-        if (sorter.asc) {
-            while (position < data.length && 
-                  (sorter.value(data[position]) < sorter.value(value))) {
-                position = position + 1;
-            }
-        } else {
-            while (position < data.length &&
-                  (sorter.value(data[position]) > sorter.value(value))) {
-                position = position + 1;
-            }
-        }
-
-        return position;
-    }       
+    }    
 });

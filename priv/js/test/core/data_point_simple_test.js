@@ -35,11 +35,13 @@ buster.testCase("data point simple test", {
 	    var requestor = {
 	    	__create: function () {
                 var context = this,
+                    state = {},
                     target = event_proto.__create();
 
                 target.to_data = context.to_data;
+                state.filter = filter_proto.__create(); 
                 target.get = function (t) {
-                	context.get(target, t);
+                	context.get(target, state, t);
                 };
 
                 return target;
@@ -47,8 +49,9 @@ buster.testCase("data point simple test", {
 	    	to_data: function (response) {
                 return response;
 	    	},
-	    	get: function (target, t) {
-                var data = filter_proto.__create(t).execute(buffer); 
+	    	get: function (target, state, t) {
+	    		console.log(t);
+                var data = state.filter.execute(t.filtering, buffer);
                 target.emit({
                 	name: 'get',
                 	request: t.request,

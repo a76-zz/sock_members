@@ -7,27 +7,27 @@ buster.spec.expose();
 
 buster.testCase("comparator test", {
     "comparator": function () {
-    	var c = comparator.__create({
-    		filter: {
-    			a: "ab"
-    		}
-    	});
+    	var c = comparator.__create();
 
-    	var r = c.narrower({
+        var current = {
+            a: "ab"
+        };
+
+    	var r = c.narrower(current, {
     		a: "abc", 
     		b: "x"
     	});
 
     	assert.equals(r, true);
 
-    	r = c.narrower({
+    	r = c.narrower(current, {
     		a: "a",
     		b: "x"
     	});
 
     	assert.equals(r, false);
 
-    	r = c.narrower({
+    	r = c.narrower(current, {
     		a: "ab",
     		b: true
     	});
