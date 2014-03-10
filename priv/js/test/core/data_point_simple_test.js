@@ -50,7 +50,6 @@ buster.testCase("data point simple test", {
                 return response;
 	    	},
 	    	get: function (target, state, t) {
-	    		console.log(t);
                 var data = state.filter.execute(t.filtering, buffer);
                 target.emit({
                 	name: 'get',
