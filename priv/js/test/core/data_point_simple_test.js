@@ -59,7 +59,7 @@ buster.testCase("data point simple test", {
 	    	},
 	    	update: function (target, data) {
 	    		target.emit({
-	    			name: 'udate',
+	    			name: 'update',
 	    			data: data
 	    		});
 	    	}
