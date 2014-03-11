@@ -4,14 +4,18 @@ if (typeof define !== 'function') {
 
 define(function (require) {
     var event_proto = require('../core/event');
+
     return {
-        __create: function(state) {
+        __create: function(state, mock) {
             var context = this,
                 state = state || {},
                 target = event_proto.__create();
 
-            state.socket = new SockJS(state.path);
-
+            state.JSON = mock ? mock.JSON : JSON;
+            state.SockJS = mock ? mock.SockJS: SockJS;
+                
+            state.socket = new state.SockJS(state.path);
+            
             state.socket.onopen = function() {
                 console.log(' [*] Connected (using: '+sockjs.protocol+')');
             };
@@ -40,7 +44,7 @@ define(function (require) {
                 request: request
             });
 
-            state.socket.send(JSON.stringify(request));
+            state.socket.send(state.JSON.stringify(request));
         },
         get_data: function (response) {
             var result = [],
@@ -58,8 +62,9 @@ define(function (require) {
 
             return result;
         },
-        onmessage: function (state, target, response) {
-            var data = this.get_data(JSON.parse(response.data)),
+        onmessage: function (state, target, data) {
+            var response = state.JSON.parse(data),
+                data = this.get_data(response),
                 name = response.action === 'rpc' ? 'get' : 'update';
 
             target.emit({
