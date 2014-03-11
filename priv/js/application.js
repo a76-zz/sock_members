@@ -1,7 +1,9 @@
 define(function (require) {
 	//Members.ApplicationAdapter = DS.FixtureAdapter.extend();
+	var membersController = require('controllers/membersController');
+
     return {
-    	MembersController: require('controllers/membersController'),
+    	MembersController: Ember.ArrayController.extend(membersController),
         MembersRoute: require('routers/membersRoute')
     };
 }); 

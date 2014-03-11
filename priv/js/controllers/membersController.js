@@ -1,4 +1,5 @@
 define(function(require) {
+	var data_point = require('../core/data_point_simple')
     return Ember.ArrayController.extend({
 		actions: {
 			filter: function() {
