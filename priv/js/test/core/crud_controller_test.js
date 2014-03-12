@@ -30,12 +30,10 @@ buster.testCase("crud controller test", {
         var state = {};
 
         var controller = crud_controller_proto.__create({
-        	request: function (that) {
+        	get_filtering: function (controller) {
         		return {
-        			filtering: {
-        				a: that.a
-        			}
-        		}
+        			a: controller.a
+        		};
         	}
         }, 
         {

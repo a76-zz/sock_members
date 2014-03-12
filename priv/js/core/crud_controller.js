@@ -1,5 +1,6 @@
 if (typeof define !== 'function') { 
     var define = require('/usr/local/lib/node_modules/amdefine')(module); 
+    Function.prototype.property = function () {return this;};
 }
 
 define(function (require) {
@@ -22,10 +23,20 @@ define(function (require) {
 
             target.actions = {
                 filter: function () {
-                    var request = state.request(target);
-                    state.data_point.filter(request.filtering);
+                    var filtering = state.get_filtering(target);
+                    state.data_point.filter(filtering);
                 }
             };
+
+            target.isEmpty = function () {
+                return this.get('model.length') === 0;   
+            }.property('model.length');
+
+            target.updates = [];
+
+            target.allUpdates = function () {
+                return this.get('udates');
+            }.property('updates.@each');
 
             return target;      	
         }
