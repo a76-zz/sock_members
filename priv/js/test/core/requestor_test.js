@@ -33,13 +33,14 @@ buster.testCase("requestor test", {
             JSON: json_mock
         };
 
-        var requestor = requestor_proto.__create({}, mock).on('get', 
+        var requestor = requestor_proto.__create({}, mock).on('get_members', 
             function (event) {
                 e = event;
             }
         );
             
         requestor.get ({
+            key: "members",
         	filtering: {a: 9}
         });
 

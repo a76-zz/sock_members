@@ -15,6 +15,7 @@ define(function (require) {
 	            var data = this.filter.execute(request.filtering, buffer);
 
 	            this.onmessage({
+	            	key: request.key,
 	            	action: 'rpc',
 	            	data: data
 	            });

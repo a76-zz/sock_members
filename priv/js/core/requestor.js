@@ -40,7 +40,7 @@ define(function (require) {
         },
         get: function (state, target, request) {
             target.emit({
-                name: 'start',
+                name: 'start_' + request.key,
                 request: request
             });
 
@@ -68,7 +68,8 @@ define(function (require) {
                 name = response.action === 'rpc' ? 'get' : 'update';
 
             target.emit({
-                name: name,
+                name: name + '_' + response.key,
+                key: response.key,
                 response: {total: data.length, data: data}
             });
         }

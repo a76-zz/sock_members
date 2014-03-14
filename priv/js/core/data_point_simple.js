@@ -14,89 +14,108 @@ define(function (require) {
                 state = state || {},
                 target = event_proto.__create(state, target || {});
 
-            state.cache = [];
+            state.cache = {};
+            state.l2cache = {};
+            
+            state.filtering = {};
+            state.l2filtering = {};
+
+            state.sortering = {};
+
+            state.keys = {};
+
             state.filter = filter_proto.__create();
             state.sorter = sorter_proto.__create();
             state.comparator = comparator_proto.__create();
 
-            state.requestor.on('get', function (event) {
-                state.cache = state.requestor.to_data(event.response).data;
-                target.emit(context.c_snapshot(state, 0));
-            });
-
-            target.f_mode = function (filtering) {
-                return context.f_mode(state, target, filtering);
+            target.f_mode = function (key, filtering) {
+                return context.f_mode(key, state, target, filtering);
             };
-            target.filter = function (filtering, f_mode) {
-                context.filter(state, target, filtering, f_mode);
+            target.filter = function (key, filtering, f_mode) {
+                context.filter(key, state, target, filtering, f_mode);
             };
-            target.sort = function (sortering) {
-                context.sort(state, target, sorting);
+            target.sort = function (key, sortering) {
+                context.sort(key, state, target, sorting);
             };
 
             return target;
         },
-        f_mode: function (state, target, filtering) {
-            return state.filtering && state.comparator.narrower(state.filtering, filtering) ? 2 : 0;
+        f_mode: function (key, state, target, filtering) {
+            return state.filtering[key] && state.comparator.narrower(state.filtering[key], filtering) ? 2 : 0;
         },
-        filter: function (state, target, filtering, f_mode) {
-            var mode = f_mode || this.f_mode(state, target, filtering);
+        filter: function (key, state, target, filtering, f_mode) {
+            var mode = f_mode || this.f_mode(key, state, target, filtering);
             if (mode === 2) {
-                this.l2_filter(state, target, filtering);
+                this.l2_filter(key, state, target, filtering);
             } else {
-                this.s_filter(state, target, filtering);
+                this.s_filter(key, state, target, filtering);
             }
         },
-        sort: function (state, target, sortering) {
-            var data = state.l2cache || state.cache,
+        sort: function (key, state, target, sortering) {
+            var data = state.l2cache[key] || state.cache[key],
                 result;
 
-            state.sortering = sortering;
+            state.sortering[key] = sortering;
 
             if (data) {
                 result = state.sorter.execute(sortering, data);
 
-                if (state.l2cache) {
-                    state.l2cache = result;
+                if (state.l2cache[key]) {
+                    state.l2cache[key] = result;
                 } else {
-                    state.cache = result;
+                    state.cache[key] = result;
                 }
-                target.emit(this.c_snapshot(state, 2));
+                target.emit(this.c_snapshot(key, state, 2));
             } else {
-                this.s_run(state);
+                this.s_run(key, state, target);
             }
         },
-        l2_filter: function (state, target, filtering) {
-            var data = state.filter.execute(filtering, state.cache);
+        l2_filter: function (key, state, target, filtering) {
+            var data = state.filter.execute(filtering, state.cache[key]);
 
-            state.l2cache = state.sorter.execute(state.sortering, data);
-            state.l2filtering = filtering;
+            state.l2cache[key] = state.sorter.execute(state.sortering, data);
+            state.l2filtering[key] = filtering;
 
-            target.emit(state, 2);
+            target.emit(key, state, 2);
         },
-        s_filter: function (state, target, filtering) {
-            state.filtering = filtering;
+        s_filter: function (key, state, target, filtering) {
+            state.filtering[key] = filtering;
 
-            delete state.cache;
-            delete state.l2cache;
-            delete state.l2filtering;
+            delete state.cache[key];
+            delete state.l2cache[key];
+            delete state.l2filtering[key];
 
-            this.s_run(state);
+            this.s_run(key, state, target);
         },
-        s_run: function (state) {
+        s_run: function (key, state, target) {
+            this.add_callback(key, state, target);
+
             state.requestor.get({
-                filtering: state.filtering,
-                sortering: state.sortering
+                key: key,
+                filtering: state.filtering[key],
+                sortering: state.sortering[key]
             });
         },
-        c_snapshot: function (state, mode) {
+        c_snapshot: function (key, state, mode) {
             return {
-                name: 'get',
-                sortering: state.sortering,
-                filtering: state.l2filtering || state.filtering,
-                data: state.l2cache || state.cache,
+                name: 'get_' + key,
+                sortering: state.sortering[key],
+                filtering: state.l2filtering[key] || state.filtering[key],
+                data: state.l2cache[key] || state.cache[key],
                 mode: mode
             };
+        },
+        add_callback: function (key, state, target) {
+            var context = this;
+
+            if (!state.keys[key]) {
+                state.requestor.on('get_' + key, function (event) {
+                    state.cache[key] = state.requestor.to_data(event.response).data;
+                    target.emit(context.c_snapshot(key, state, 0));
+                });
+
+                state.keys[key] = key;
+            } 
         }
     };
 });
