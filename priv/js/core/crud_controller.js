@@ -4,27 +4,25 @@ if (typeof define !== 'function') {
 }
 
 define(function (require) {
-    var data_point = require('../core/data_point_simple'),
-        requestor = require('../core/requestor');
-
     return {
-        __create: function (state, target, mock) {
+        __create: function (state, target) {
         	var context = this,
         	    state = state || {},
         	    target = target || {};
 
-            state.data_point = data_point.__create({
-                requestor: requestor.__create({}, mock)
-            });
-
-            state.data_point.on('get', function (output) {
-                target.set('model', output.data);
-            }); 
-
             target.actions = {
                 filter: function () {
-                    var filtering = state.get_filtering(target);
-                    state.data_point.filter(filtering);
+                    var filtering = state.get_filtering(this),
+                        context = this;
+
+                    if (!state.subscribed) {
+                        state.storage.on('get_' + state.key, function (output) {
+                            context.set('model', output.data);
+                        });
+
+                        state.subscribed = true; 
+                    }
+                    state.storage.filter(state.key, filtering);
                 }
             };
 

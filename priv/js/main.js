@@ -1,6 +1,7 @@
 (function(root) {
-	curl(["application"], 
-		function (config, app) {
+	curl({baseUrl: '/js'},
+		["application"], 
+		function (application) {
             var app = Ember.Application.create(application);
 
             app.Router.map(function() {

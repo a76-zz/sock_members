@@ -1,34 +1,22 @@
 define(function(require) {
-	
-    return Ember.ArrayController.extend({
-		actions: {
-			filter: function() {
-				var first_name = this.get('first_name'),
-				query = "*";
-			
-				if (first_name) {
-					query = "first_name_s:" + first_name;
-				}
-	        
-	        	var context = this;
-				return Members.Endpoint.send('members', query).then(function(data) {
-					context.set('model', data);
-				});
-			}
-		},
-		isEmpty: function() {
-			var length = this.get('model.length');
-	        return length === 0;
-		}.property('model.length'),
+	var buffer = [
+	        {first_name_s: "Andrei", last_name_s: "Silchankau"},
+	        {first_name_s: "Andrei", last_name_s: "Tarkovsky"}
+	    ],
+	    requestor = require('../mock/requestor'),
+	    storage = require('../core/storage'),
+	    crud_controller = require('../core/crud_controller'),
+	    state = {
+	    	key: 'members',
+	    	storage: storage.__create({
+                 requestor: requestor.__create(buffer)
+            }),
+            get_filtering: function (that) {
+                return {
+                    first_name_s: that.get('first_name')
+                };
+            }
+	    };
 
-		updates: [],
-		update: function(members) {
-			for (var index=0; index < members.length; ++index) {
-				this.get('updates').pushObject(members[index]);
-			}
-		},
-	    allUpdates: function() {
-	    	return this.get('updates');
-	    }.property('updates.@each')
-	};
+	return crud_controller.__create(state, {});
 });

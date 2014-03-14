@@ -1,4 +1,4 @@
-var data_point_proto = require('../../core/data_point_simple');
+var storage_proto = require('../../core/storage');
 var requestor_proto = require('../../core/requestor');
 
 var sockjs_mock = require('../../mock/sockjs');
@@ -30,13 +30,13 @@ buster.testCase("data point simple test", {
             started = false,
 			snapshot,
 
-	        p = data_point_proto.__create({
+	        storage = storage_proto.__create({
 			    requestor: requestor_proto.__create({}, mock)
 		    }).on('get_members', function (result) {
 	            snapshot = result;
 		    });
 
-		p.filter('members', {
+		storage.filter('members', {
 			a: 3
 		});
 

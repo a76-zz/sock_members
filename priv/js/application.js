@@ -4,7 +4,7 @@ define(function (require) {
 
     return {
     	MembersController: Ember.ArrayController.extend(membersController),
-        MembersRoute: require('routers/membersRoute')
+        MembersRoute: require('routers/membersRouter')
     };
 }); 
 
