@@ -5,47 +5,48 @@ if (typeof define !== 'function') {
 define({
     __create:function (state, target) {
         var context = this,
-            state = state || { frame: 0, count: function () { return 0; }  },
+            state = state || { default_frame: 1, frame: {}, count: function (key) { return 0; }  },
             target = target || {};
 
-        target.pages = function (page_size, current) {
-            return context.pages(state, page_size, current);
+        target.pages = function (key, page_size, current) {
+            return context.pages(key, state, page_size, current);
         };
-        target.page_count = function (page_size) {
-            return context.page_count(state, page_size);
+        target.page_count = function (key, page_size) {
+            return context.page_count(key, state, page_size);
         };
-        target.data = function (page_size, current) {
-            return context.data(state, page_size, current);
+        target.data = function (key, page_size, current) {
+            return context.data(key, state, page_size, current);
         };
-        target.range = function (page_size, current) {
-            return context.range(state, page_size, current);
+        target.range = function (key, page_size, current) {
+            return context.range(key, state, page_size, current);
         };
-        target.contains = function (page_size, current) {
-            return context.contains(state, page_size, current);
+        target.contains = function (key, page_size, current) {
+            return context.contains(key, state, page_size, current);
         };
 
         return target;
     },
-    page_count: function (that, page_size) {
-        var count = that.count();
+    page_count: function (key, that, page_size) {
+        var count = that.count(key);
         var remainder = count % page_size;
         var whole = (count - remainder) / page_size;
 
         return remainder > 0 ? whole + 1 : whole;
     },
-    pages: function (that, page_size, current) {
+    pages: function (key, that, page_size, current) {
         var result = [],
         left,
         right,
-        page_count = this.page_count(that, page_size);
+        page_count = this.page_count(key, that, page_size),
+        frame = that.frame[key] || default_frame;
 
         result.push({
             index: 1,
             active: current == 1
         });
 
-        left = Math.max(current - that.frame, 2);
-        right = Math.min(current + that.frame, page_count);
+        left = Math.max(current - frame, 2);
+        right = Math.min(current + frame, page_count);
 
         if (right >= left) {
             if (left > 2) {
@@ -77,9 +78,9 @@ define({
 
         return result;
     },
-    range: function (that, page_size, current) {
+    range: function (key, that, page_size, current) {
         var to = current * page_size,
-        count = that.count();
+        count = that.count(key);
 
         if (count !== undefined) {
             to = Math.min(current * page_size, count);
@@ -87,12 +88,12 @@ define({
 
         return { from: (current - 1) * page_size, to: to };
     },
-    data: function (that, page_size, current) {
-        var range = this.range(that, page_size, current);
-        return that.read(range);
+    data: function (key, that, page_size, current) {
+        var range = this.range(key, that, page_size, current);
+        return that.read(key, range);
     },
-    contains: function (that, page_size, current) {
-        var range = this.range(that, page_size, current);
-        return that.contains(range);
+    contains: function (key, that, page_size, current) {
+        var range = this.range(key, that, page_size, current);
+        return that.contains(key, range);
     }
 });

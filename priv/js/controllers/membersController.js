@@ -18,5 +18,5 @@ define(function(require) {
             }
 	    };
 
-	return crud_controller.__create(state, {});
+	return crud_controller.__create(state);
 });
