@@ -72,10 +72,10 @@ define(function (require) {
         },
         l2_filter: function (key, state, target, filtering) {
             var data = state.filter.execute(filtering, state.cache[key]);
-
-            state.l2cache[key] = state.sorter.execute(state.sortering, data);
-            state.l2filtering[key] = filtering;
-
+            
+            state.filtering[key] = filtering;
+            state.l2cache[key] = state.sorter.execute(state.sortering[key], data);
+            
             target.emit(key, state, 2);
         },
         s_filter: function (key, state, target, filtering) {
@@ -100,7 +100,7 @@ define(function (require) {
             return {
                 name: 'get_' + key,
                 sortering: state.sortering[key],
-                filtering: state.l2filtering[key] || state.filtering[key],
+                filtering: state.filtering[key],
                 data: state.l2cache[key] || state.cache[key],
                 mode: mode
             };
