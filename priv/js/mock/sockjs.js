@@ -17,7 +17,9 @@ define(function (require) {
 	            this.onmessage({
 	            	key: request.key,
 	            	action: 'rpc',
-	            	data: data
+	            	request: request,
+	            	data: data,
+	            	total: data.length
 	            });
 	    	}; 
 

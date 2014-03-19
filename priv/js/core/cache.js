@@ -26,6 +26,9 @@ define({
         target.read_unsafe = function (key, range) {
             return context.read_unsafe(key, state, range);
         };
+        target.read_all = function (key) {
+            return context.read_all(key, state);
+        };
         target.coverage = function (key, range, capacity, count) {
             return context.coverage(key, state, range, capacity, count);
         };
@@ -119,6 +122,9 @@ define({
             return [];
         }
         
+    },
+    read_all: function (key, state) {
+        return state.buffer;
     },
     read: function (key, state, range) {
         var result = {};

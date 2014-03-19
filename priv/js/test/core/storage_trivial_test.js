@@ -9,7 +9,7 @@ var assert = buster.assert;
 
 buster.spec.expose();
 
-buster.testCase("data point simple test", {
+buster.testCase("storage trivial simple test", {
 	"filter": function () {
 		var buffer = [
 			    {a: 1},

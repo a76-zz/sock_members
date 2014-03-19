@@ -62,15 +62,16 @@ define(function (require) {
 
             return result;
         },
-        onmessage: function (state, target, data) {
-            var response = state.JSON.parse(data),
+        onmessage: function (state, target, message) {
+            var response = state.JSON.parse(message),
                 data = this.get_data(response),
                 name = response.action === 'rpc' ? 'get' : 'update';
 
             target.emit({
                 name: name + '_' + response.key,
                 key: response.key,
-                response: {total: data.length, data: data}
+                request: response.request,
+                response: {total: response.total, data: data}
             });
         }
     };

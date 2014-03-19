@@ -44,8 +44,7 @@ buster.testCase("requestor test", {
         	filtering: {a: 9}
         });
 
-        assert.equals(e.response.total, 1);
-        assert.equals(e.response.data[0].id, 0);
-        assert.equals(e.response.data[0].a, 9);    
+        assert.equals(1, e.response.total);
+        assert.equals(9, e.response.data[0].a);    
     }    
 });
