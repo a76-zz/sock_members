@@ -3,18 +3,18 @@ if (typeof define !== 'function') {
 }
 
 define(function (require) {
-	var sockjs_mock = require('../mock/sockjs'),
-	    json_mock = require('../mock/json'),
-	    requestor_proto = require('../core/requestor');
+	var sockjs = require('../mock/sockjs'),
+	    json = require('../mock/json'),
+	    requestor = require('../core/requestor');
 
     return {
     	__create: function(buffer) {
 	    	var mock = {
-	            SockJS: sockjs_mock.__create(buffer),
-	            JSON: json_mock
+	            SockJS: sockjs.__create(buffer),
+	            JSON: json
 	        };
 
-	        return requestor_proto.__create({}, mock);
+	        return requestor.__create({}, mock);
         }
     };
 });

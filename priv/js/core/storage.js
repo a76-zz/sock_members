@@ -36,7 +36,7 @@ define(function (require) {
             };
 
             target.to_page = function (key, page) {
-                context.to_page(state, key, target, page);
+                context.to_page(state, key, page);
             };
 
             target.change_page_size = function (key, page_size) {
@@ -86,12 +86,14 @@ define(function (require) {
         	var context = state[key],
                 total = mode === 2 ? context.l2cache.length : context.total,
                 range = state.pager.range(total, context.page_size, context.page),
+                filtering = mode === 2 ? context.l2filtering : context.filtering,
                 data = mode === 2 ? context.l2cache.slice(range.from, range.to) : state.cache.read_unsafe(key, range);
+                
             return {
                 name: 'get_' + key,
                 key: key,
                 mode: mode,
-                filtering: mode === 2 ? context.l2filtering : context.filtering,
+                filtering: filtering,
                 page: context.page,
                 page_size: context.page_size,
                 page_count: state.pager.page_count(total, context.page_size),
@@ -119,7 +121,7 @@ define(function (require) {
             if (context.l2cache) {
                 state.emit(this.get_snapshot(state, key, 2));
             } else {
-                range = this.get_range(key, state);
+                range = this.get_range(state, key);
                 if (state.cache.contains(key, range)) {
                     state.emit(this.get_snapshot(state, key, 1));
                 } else {
