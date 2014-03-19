@@ -4,7 +4,7 @@ define(function(require) {
 	        {first_name_s: "Andrei", last_name_s: "Tarkovsky"}
 	    ],
 	    requestor = require('../mock/requestor'),
-	    storage = require('../core/storage'),
+	    storage = require('../core/storage_trivial'),
 	    crud_controller = require('../core/crud_controller'),
 	    state = {
 	    	key: 'members',

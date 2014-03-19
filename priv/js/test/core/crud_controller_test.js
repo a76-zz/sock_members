@@ -1,5 +1,5 @@
 var crud_controller_proto = require('../../core/crud_controller');
-var storage_proto = require('../../core/storage');
+var storage_proto = require('../../core/storage_trivial');
 var requestor_mock = require('../../mock/requestor');
 
 var buster = require('/usr/local/lib/node_modules/buster');

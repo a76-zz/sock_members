@@ -5,8 +5,11 @@ if (typeof define !== 'function') {
 define({
     __create: function (state, target) {
         var context = this,
-        state = state || { buffer: {}, map: {} },
+        state = state || {},
         target = target || {};
+
+        state.buffer = {};
+        state.map = {};
 
         target.count = function (key) {
             return context.count(key, state);

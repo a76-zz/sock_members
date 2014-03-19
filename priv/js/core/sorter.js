@@ -7,30 +7,27 @@ define({
         var context = this, 
             target = target || {};
 
-        target.execute = function (sorter, data) {
-            return context.sort(sorter, data);
+        target.execute = function (sortering, data) {
+            return context.sort(sortering, data);
         }
-        target.position = function (sorter, data, value) {
-            return context.position(sorter, data, value);
-        };
         return target;
     },
-    asc_sorter: function (sorter, a, b) {
-        return sorter.value(a) > sorter.value(b) ? 1 : -1;
+    asc_sortering: function (sortering, a, b) {
+        return sortering.value(a) > sortering.value(b) ? 1 : -1;
     },
-    desc_sorter: function (sorter, a, b) {
-        return sorter.value(a) < sorter.value(b) ? 1 : -1;
+    desc_sortering: function (sortering, a, b) {
+        return sortering.value(a) < sortering.value(b) ? 1 : -1;
     },
-    sort: function (sorter, data) {
-        var type = this;
+    sort: function (sortering, data) {
+        var context = this;
 
-        if (sorter.asc) {
+        if (sortering.asc) {
             return data.sort(function (a, b) {
-                return type.asc_sorter(sorter, a, b);
+                return context.asc_sortering(sortering, a, b);
             });
         } else {
             return data.sort(function (a, b) {
-                return type.desc_sorter(sorter, a, b);
+                return context.desc_sortering(sortering, a, b);
             });
         }
     }    

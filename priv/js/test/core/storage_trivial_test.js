@@ -1,4 +1,4 @@
-var storage_proto = require('../../core/storage');
+var storage_proto = require('../../core/storage_trivial');
 var requestor_proto = require('../../core/requestor');
 
 var sockjs_mock = require('../../mock/sockjs');
