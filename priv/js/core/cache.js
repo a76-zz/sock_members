@@ -124,7 +124,7 @@ define({
         
     },
     read_all: function (key, state) {
-        return state.buffer;
+        return state.buffer[key];
     },
     read: function (key, state, range) {
         var result = {};

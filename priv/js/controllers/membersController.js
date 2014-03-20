@@ -1,22 +1,20 @@
 define(function(require) {
-	var buffer = [
-	        {first_name_s: "Andrei", last_name_s: "Silchankau"},
-	        {first_name_s: "Andrei", last_name_s: "Tarkovsky"}
-	    ],
-	    requestor = require('../mock/requestor'),
-	    storage = require('../core/storage_trivial'),
-	    crud_controller = require('../core/crud_controller'),
-	    state = {
-	    	key: 'members',
-	    	storage: storage.__create({
-                 requestor: requestor.__create(buffer)
-            }),
-            get_filtering: function (that) {
-                return {
-                    first_name_s: that.get('first_name')
-                };
-            }
-	    };
+	var navigator = require('../core/navigator');
 
-	return crud_controller.__create(state);
+	return {
+		__create: function (state, target) {
+			var state = state || {},
+			    target = target || {};
+
+			state.key = 'members';
+			state.get_filtering = function (context) {
+				return {
+					first_name_s: context.get('first_name')
+				};
+			};
+
+			target = navigator.__create(state, target);
+			return target;
+		} 
+	};
 });

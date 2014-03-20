@@ -13,7 +13,7 @@
     <div>
       {{input type="text" id="first_name_filter" placeholder="First Name" value=first_name action="filter"}}
     </div>
-    {{#unless isEmpty}}
+    {{#unless is_empty}}
       <h3>Searh result:</h3>
       <table>
         <thead>
@@ -22,18 +22,33 @@
             <th>Last Name</th>
           </tr>
         </thead>
-      {{#each}}
+      {{#each model.data}}
         <tr>
           <td>{{first_name_s}}</td>
           <td>{{last_name_s}}</td>
         </tr>
       {{/each}}
+
       </table>
+      <div class="p-paging-indexes">
+        <label>Pages:</label>
+        {{#each model.pages}}
+          {{#if splitter}}
+            <span class="p-page-splitter">...</span>
+          {{else}}
+            {{#if active}}
+              <span class="p-page p-selected">{{index}}</span>
+            {{else}}
+              <span class="p-page"><a href="#" {{action to_page index target="controller"}}>{{index}}</a></span>
+            {{/if}}
+          {{/if}}
+        {{/each}}
+      </div>
+      <div>
+      <label for="page_size">Page Size:</label>{{input type="text" id="page_size" value=model.page_size action=""}}
+      </div>
+
     {{/unless}}
-    <h3>Updates:</h3>
-    {{#each allUpdates}}
-       <div>{{first_name_s}}</div>
-    {{/each}}
 
   </script>
 

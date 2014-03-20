@@ -3,7 +3,7 @@ if (typeof define !== 'function') {
 }
 
 define(function (require) {
-    var e = require('../core/event'),
+    var event = require('../core/event'),
         cache = require('../core/cache'),
         pager = require('../core/pager'),
         filter = require('../core/filter'),
@@ -14,7 +14,7 @@ define(function (require) {
         __create: function (state, target) {
             var context = this,
                 state = state || {},
-                target = e.__create(state, target || {});
+                target = event.__create(state, target || {});
             
             state.cache = cache.__create();
             state.pager = pager.__create();
@@ -74,7 +74,11 @@ define(function (require) {
 
             state.requestor.on('get_' + key, function (e) {
                 state[key].total = e.response.total;
-                state.cache.write(key, e.response.data, e.request.range);
+                if (e.request.range) {
+                    state.cache.write(key, e.response.data, e.request.range);
+                } else {
+                    state.cache.write(key, e.response.data, {from: 0, to: e.response.total});
+                }
                 state.emit(context.get_snapshot(state, key, 0));
             });
         }, 
@@ -176,26 +180,30 @@ define(function (require) {
         filter: function (state, key, filtering, f_mode) {
             var context = state[key],
                 mode = f_mode || this.get_f_mode(state, key, filtering),
-                data;
+                data,
+                range;
 
             context.page = 1;
 
             if (mode === 2) {
                 context.l2filtering = filtering;
                 data = state.cache.read_all(key);
-                data = state.filter.execute(filtering, data);
-                context.l2cache = state.sorter.execute(context.sortering, data);
+                context.l2cache = state.filter.execute(filtering, data);
+                context.l2cache = state.sorter.execute(context.sortering, context.l2cache);
                 
                 state.emit(this.get_snapshot(state, key, 2));
             } else {
                 context.filtering = filtering;
                 state.l2cache = null;
 
-                this.send_request(state, key, {
-                    from: 0,
-                    to: Math.max(context.capacity, context.page_size)
-                });
+                if (context.capacity) {
+                    range = {
+                        from: 0,
+                        to: Math.max(context.capacity, context.page_size)
+                    }
+                }
 
+                this.send_request(state, key, range);
             }
         }
 	};

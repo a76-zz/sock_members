@@ -5,8 +5,8 @@ var assert = buster.assert;
 
 buster.spec.expose();
 
-buster.testCase("filter test", {
-    "filter.and": function() {
+buster.testCase("filter", {
+    "basic": function() {
         var data = [
             { a: 'ab', b: 'q'},
             { a: 'abc', b: 'cde'},
