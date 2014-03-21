@@ -7,6 +7,11 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <script type="text/x-handlebars" data-template-name="members-item"> 
+    <td>{{view.data.first_name_s}}</td>
+    <td>{{view.data.last_name_s}}</td>
+  </script>
+
   <script type="text/x-handlebars" data-template-name="members">
     <h2>Our Members</h2>
     <h3>Filtered by:</h3>
@@ -22,17 +27,14 @@
             <th>Last Name</th>
           </tr>
         </thead>
-      {{#each model.data}}
-        <tr>
-          <td>{{first_name_s}}</td>
-          <td>{{last_name_s}}</td>
-        </tr>
+      {{#each snapshot.data}}
+        {{view Members.MembersItemView dataBinding="this"}}
       {{/each}}
 
       </table>
       <div class="p-paging-indexes">
         <label>Pages:</label>
-        {{#each model.pages}}
+        {{#each snapshot.pages}}
           {{#if splitter}}
             <span class="p-page-splitter">...</span>
           {{else}}
@@ -45,7 +47,7 @@
         {{/each}}
       </div>
       <div>
-      <label for="page_size">Page Size:</label>{{input type="text" id="page_size" value=model.page_size action=""}}
+      <label for="page_size">Page Size:</label>{{input type="text" id="page_size" value=snapshot.page_size action=""}}
       </div>
 
     {{/unless}}

@@ -1,7 +1,8 @@
 define(function (require) {
     var buffer = [
             {first_name_s: "Andrei", last_name_s: "Silchankau"},
-            {first_name_s: "Andrei", last_name_s: "Tarkovsky"}
+            {first_name_s: "Andrei", last_name_s: "Tarkovsky"},
+            {first_name_s: "Andrei", last_name_s: "Tamelo"}
         ],
         storage = require('core/storage'),
         requestor = require('mock/requestor'),
@@ -25,7 +26,8 @@ define(function (require) {
 
     return {
         MembersController: Ember.Controller.extend(controller.__create(state)),
-        MembersRoute: require('routers/membersRouter')
+        MembersRoute: require('routers/membersRouter'),
+        MembersItemView: require('views/membersItemView')
     };
 }); 
 
