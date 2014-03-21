@@ -46,32 +46,15 @@ define(function (require) {
 
             state.socket.send(state.JSON.stringify(request));
         },
-        get_data: function (response) {
-            var result = [],
-                members = response.data,
-                convert_item = function (item, index) {
-                    item.id = item.id_i || index;
-                    return item;
-                };
-
-            if (members) {
-                for(var index = 0; index < members.length; ++index) {
-                    result.push(convert_item(members[index], index));
-                }    
-            }
-
-            return result;
-        },
         onmessage: function (state, target, message) {
             var response = state.JSON.parse(message),
-                data = this.get_data(response),
                 name = response.action === 'rpc' ? 'get' : 'update';
 
             target.emit({
                 name: name + '_' + response.key,
                 key: response.key,
                 request: response.request,
-                response: {total: response.total, data: data}
+                response: {total: response.total, data: response.data}
             });
         }
     };

@@ -6,46 +6,69 @@ if (typeof define !== 'function') {
 define(function (require) {
     return {
         __create: function (state, target) {
-        	var context = this,
-        	    state = state || {},
-        	    target = target || {};
+            var context = this,
+                state = state || {},
+                target = target || {},
+                storage = state.storage;
 
             target.actions = {
                 filter: function () {
-                    var filtering = state.get_filtering(this);
+                    if (!state.subscribed) {
+                        context.subscribe(state, this);
+                        state.subscribed = true;
+                    };
+                    
+                    storage.filter(state.key, this.get_filtering());
+                },
+                sort: function (key) {
+                    var sortering = this.get('snapshot.sortering');
 
-                    context.subscribe(state, this);
-                    state.storage.filter(state.key, filtering);
+                    storage.sort(state.key, {
+                        key: key,
+                        asc: sortering.key === key ? !sortering.asc : true
+                    });
                 },
                 change_page_size: function () {
                     var page_size = this.get('snapshot.page_size');
-                    state.storage.change_page_size(state.key, page_size);
+                    storage.change_page_size(state.key, page_size);
                 },
                 to_page: function (index) {
-                    state.storage.to_page(state.key, index);
+                    storage.to_page(state.key, index);
                 },
                 select_item: function (item) {
-                    this.set('selection.selected', false);
+                    var selection = this.get('selection');
+                    if (selection) {
+                        selection.set('selected', false);
+                    }
+                    
                     item.set('selected', true);
-                    this.set('selection', item)
+                    this.set('selection', item);
                 }
             };
 
             target.is_empty = function () {
                 var total = this.get('snapshot.total');
                 return (total === undefined || total === 0);  
-            }.property('snapshot.total');
+            }.property('snapshot');
 
-            return target;      	
+            return target;          
         },
         subscribe: function (state, context) {
-            if (!state.subscribed) {
-                state.storage.on('get_' + state.key, function (output) {
-                   context.set('snapshot', output);
-                });
+            state.storage.on('get_' + state.key, function (output) {
+                var data = [];
 
-                state.subscribed = true; 
-            }
+                for (var index = 0; index < output.data.length; ++index) {
+                    data.push(Ember.Object.create({
+                        index: index,
+                        selected: false,
+                        content: output.data[index]
+                    }));
+                }
+
+                output.data = data;
+                context.set('snapshot', output);
+            });
         }
+        
     };
 });

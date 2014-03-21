@@ -98,6 +98,10 @@ define(function (require) {
                 key: key,
                 mode: mode,
                 filtering: filtering,
+                sortering: {
+                    asc: context.sortering.asc,
+                    key: context.sortering.key
+                },
                 page: context.page,
                 page_size: context.page_size,
                 page_count: state.pager.page_count(total, context.page_size),
@@ -164,7 +168,7 @@ define(function (require) {
                     data = state.cache.read_all(key);
                 }
 
-                context.l2cache = context.sorter.execute(context.sortering, data);
+                context.l2cache = state.sorter.execute(context.sortering, data);
 
                 state.emit(this.get_snapshot(state, key));
             } else {

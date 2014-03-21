@@ -7,9 +7,22 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+  <script type="text/x-handlebars" data-template-name="members-header-item">
+    <span>{{view.header}}</span> {{view Members.SorterIndicatorView tagName="a" templateName="sorter-indicator" ascClass="asc" descClass="desc" enteredBinding="view.entered" keyBinding="view.key"}}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="sorter-indicator">
+     {{view.title}}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="members-header">
+     {{view Members.MembersHeaderItemView header="First Name" key="first_name_s"}}
+     {{view Members.MembersHeaderItemView header="Last Name" key="last_name_s"}}
+  </script>
+
   <script type="text/x-handlebars" data-template-name="members-item"> 
-    <td>{{view.data.first_name_s}}</td>
-    <td>{{view.data.last_name_s}}</td>
+    <td>{{view.item.content.first_name_s}}</td>
+    <td>{{view.item.content.last_name_s}}</td>
   </script>
 
   <script type="text/x-handlebars" data-template-name="members">
@@ -22,13 +35,10 @@
       <h3>Searh result:</h3>
       <table>
         <thead>
-          <tr>
-            <th>First Name</th>
-            <th>Last Name</th>
-          </tr>
+          {{view Members.MembersHeaderView}}
         </thead>
       {{#each snapshot.data}}
-        {{view Members.MembersItemView dataBinding="this"}}
+        {{view Members.MembersItemView itemBinding="this"}}
       {{/each}}
 
       </table>
@@ -47,7 +57,7 @@
         {{/each}}
       </div>
       <div>
-      <label for="page_size">Page Size:</label>{{input type="text" id="page_size" value=snapshot.page_size action=""}}
+      <label for="page_size">Page Size:</label>{{input type="text" id="page_size" value=snapshot.page_size action="change_page_size"}}
       </div>
 
     {{/unless}}

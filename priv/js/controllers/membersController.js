@@ -1,20 +1,24 @@
 define(function(require) {
-	var navigator = require('../core/navigator');
+    var navigator = require('../core/navigator');
 
-	return {
-		__create: function (state, target) {
-			var state = state || {},
-			    target = target || {};
+    return {
+        __create : function (storage) {
+            var result = Ember.Controller.extend(
+                navigator.__create({
+                  key: 'members',
+                  storage: storage
+                })
+            );
 
-			state.key = 'members';
-			state.get_filtering = function (context) {
-				return {
-					first_name_s: context.get('first_name')
-				};
-			};
+            result.reopen({
+                get_filtering: function() {
+                    return {
+                        first_name_s: this.get('first_name')
+                    };
+                }
+            });
 
-			target = navigator.__create(state, target);
-			return target;
-		} 
-	};
+            return result;
+        }
+    }
 });

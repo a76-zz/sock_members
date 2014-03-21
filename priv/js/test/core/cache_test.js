@@ -6,7 +6,7 @@ buster.spec.expose();
 
 var key = "members";
 
-buster.testCase("cache test", {
+buster.testCase("cache", {
     add1: function() {
         var c = cache.__create();
         c.write(key, [7, 8], {from: 7, to: 9});

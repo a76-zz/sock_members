@@ -9,25 +9,26 @@ define(function (require) {
         controller = require('controllers/membersController'),
         __storage = storage.__create({
             requestor: requestor.__create(buffer)
-        }),
-        state = { 
-            storage: __storage.register('members', {
-                frame: 1,
-                page_size: 2,
-                sortering: {
-                    key: "first_name_s",
-                    asc: true,
-                    value: function (current) {
-                        return current[this.key];
-                    }
+        }).register('members', {
+            frame: 1,
+            page_size: 2,
+            sortering: {
+                key: "first_name_s",
+                asc: true,
+                value: function (current) {
+                    return current[this.key];
                 }
-            })
-        };
+            }
+        });
 
     return {
-        MembersController: Ember.Controller.extend(controller.__create(state)),
+        GlobalStorage: __storage,
+        MembersController: controller.__create(__storage),
         MembersRoute: require('routers/membersRouter'),
-        MembersItemView: require('views/membersItemView')
+        MembersItemView: require('views/membersItemView'),
+        SorterIndicatorView: require('views/abstract/sorterIndicatorView'),
+        MembersHeaderItemView: require('views/membersHeaderItemView'),
+        MembersHeaderView: require('views/membersHeaderView')
     };
 }); 
 

@@ -306,5 +306,30 @@ buster.testCase("storage", {
         assert.equals(1, snapshot.data.length);
         assert.equals(1, snapshot.data[0].b);
         assert.equals(3, snapshot.data[0].a);
+    },
+    "sorting": function () {
+        var buffer = [
+                {a: 1},
+                {a: 2},
+                {a: 3, b: 1},
+                {a: 3, b: 2},
+                {a: 3, b: 3},
+                {a: 6},
+                {a: 7},
+                {a: 8},
+                {a: 9},
+                {a: 10}
+            ],
+            snapshot,
+            storage = create_storage(buffer, 2, null) // capacity is not defined
+            .on('get_members', function (result) {
+                snapshot = result;
+            }); 
+
+        storage.sort('members', {asc: false, key: 'a'});
+
+        assert.equals(2, snapshot.data.length);
+        assert.equals(10, snapshot.data[0].a);
+        assert.equals(9, snapshot.data[1].a);
     }
 });
