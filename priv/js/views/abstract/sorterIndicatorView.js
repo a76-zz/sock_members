@@ -1,6 +1,6 @@
 define(function (require) {
     return Ember.View.extend({
-        classNameBindings: ['asc:ascCalss:descClass', 'visible:visible:hidden'],
+        classNameBindings: ['asc', 'visible:visible:hidden'],
         asc: function () {
         	return this.get('controller.snapshot.sortering.asc') === true ? this.get('ascClass') : this.get('descClass');
         }.property('controller.snapshot'),

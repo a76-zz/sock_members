@@ -30,10 +30,10 @@
 }
 
 .asc {
-    background: #eff8ff url('asc.gif') left center no-repeat;
+    background: #eff8ff url('../img/asc.gif') left center no-repeat;
 }
 
 .desc {
-    background: #eff8ff url('desc.gif') left center no-repeat;
+    background: #eff8ff url('../img/desc.gif') left center no-repeat;
 }
 

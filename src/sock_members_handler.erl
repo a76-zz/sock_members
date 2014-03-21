@@ -28,6 +28,11 @@ init([]) ->
               {mimetypes, [
                   {<<".css">>, [<<"text/css">>]}
                ]}]},
+        {"/img/[...]", cowboy_static,
+             [{directory, {priv_dir, sock_members, [<<"img">>]}},
+              {mimetypes, [
+                  {<<".gif">>, [<<"image/gif">>]}
+               ]}]},
         {"/", static_handler, ["members.html"]}
     ],
     Routes = [{'_',  VhostRoutes}], % any vhost
