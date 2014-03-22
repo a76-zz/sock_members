@@ -10,10 +10,8 @@ define(function (require) {
         visible: function () {
         	return this.get('controller.snapshot.sortering.key') === this.get('key') || this.get('entered');
         }.property('controller.snapshot', 'entered'),
-        eventManager: Ember.Object.create({
-        	click: function (event, view) {
-        		view.get('controller').send('sort', view.key);
-        	}
-        })
+        click: function (event) {
+            this.get('controller').send('sort', this.key);
+        }
     });
 });

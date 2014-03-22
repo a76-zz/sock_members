@@ -2,60 +2,53 @@ if (typeof define !== 'function') {
     var define = require('/usr/local/lib/node_modules/amdefine')(module); 
 }
 
-define(function (require) {
-    var event_proto = require('../core/event');
+define({
+    create: function(key, mock) {
+        var JSON = mock ? mock.JSON : JSON,
+            SockJS = mock ? mock.SockJS: SockJS,
+            socket = new SockJS(key),
+            result = {
+                handlers: {},
+                emit: function (event) {
+                    var handlers = this.handlers[event.name];
 
-    return {
-        __create: function(state, mock) {
-            var context = this,
-                state = state || {},
-                target = event_proto.__create();
+                    if (handlers) {
+                        for (var index = 0; index < handlers.length; ++index) {
+                           handlers[index](event);
+                        }
+                    }
+                    return this;
+                },
+                on: function (name, handler) {
+                    if (this.handlers[name] === undefined) {
+                        this.handlers[name] = [];
+                    }
 
-            state.JSON = mock ? mock.JSON : JSON;
-            state.SockJS = mock ? mock.SockJS: SockJS;
-                
-            state.socket = new state.SockJS(state.path);
-            
-            state.socket.onopen = function() {
-                console.log(' [*] Connected (using: '+sockjs.protocol+')');
+                    this.handlers[name].push(handler);
+                    return this;
+                },
+                get: function (request) {
+                    this.emit({
+                        name: 'start_' + request.key,
+                        request: request
+                    });
+
+                    socket.send(JSON.stringify(request));
+                }
             };
 
-            state.socket.onclose = function(e) {
-                console.log(' [*] Disconnected ('+e.status + ' ' + e.reason+ ')');
-            };
+        socket.onmessage = function (message) {
+            var response = JSON.parse(message),
+            name = response.action === 'rpc' ? 'get' : 'update';
 
-            state.socket.onmessage = function (response) {
-                context.onmessage(state, target, response);
-            };
-
-            target.get = function (request) {
-                context.get(state, target, request);
-            };
-
-            target.to_data = function (response) {
-                return response;
-            };
-
-            return target;
-        },
-        get: function (state, target, request) {
-            target.emit({
-                name: 'start_' + request.key,
-                request: request
-            });
-
-            state.socket.send(state.JSON.stringify(request));
-        },
-        onmessage: function (state, target, message) {
-            var response = state.JSON.parse(message),
-                name = response.action === 'rpc' ? 'get' : 'update';
-
-            target.emit({
+            result.emit({
                 name: name + '_' + response.key,
                 key: response.key,
                 request: response.request,
                 response: {total: response.total, data: response.data}
             });
-        }
-    };
+        };
+
+        return result;
+    }
 });

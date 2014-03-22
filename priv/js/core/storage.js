@@ -3,214 +3,193 @@ if (typeof define !== 'function') {
 }
 
 define(function (require) {
-    var event = require('../core/event'),
-        cache = require('../core/cache'),
-        pager = require('../core/pager'),
-        filter = require('../core/filter'),
-        sorter = require('../core/sorter'),
-        comparator = require('../core/comparator');
+    var cache = require('../core/utility/cache'),
+        pager = require('../core/utility/pager'),
+        filter = require('../core/utility/filter'),
+        sorter = require('../core/utility/sorter'),
+        comparator = require('../core/utility/comparator');
 
-	return {
-        __create: function (state, target) {
-            var context = this,
-                state = state || {},
-                target = event.__create(state, target || {});
-            
-            state.cache = cache.__create();
-            state.pager = pager.__create();
-            state.filter = filter.__create();
-            state.sorter = sorter.__create();
-            state.comparator = comparator.__create();
-
-            state.emit = function (event) {
-                target.emit(event);
-            };
-
-            target.register = function (key, settings) {
-                context.register(state, key, settings);
-                return this;
-            };
-
-            target.get_f_mode = function (key, filtering) {
-                return context.get_f_mode(state, key, filtering);
-            };
-
-            target.to_page = function (key, page) {
-                context.to_page(state, key, page);
-            };
-
-            target.change_page_size = function (key, page_size) {
-               context.change_page_size(state, key, page_size);
-            };
-
-            target.to_next = function (key) {
-                context.to_next(state, key);
-            };
-
-            target.to_previous = function (key) {
-                context.to_previous(state, key);
-            };
-
-            target.sort = function (key, sortering) {
-                context.sort(state, key, sortering)
-            };
-
-            target.filter = function (key, filtering, f_mode) {
-                context.filter(state, key, filtering, f_mode);
-            };
-
-            return target;
-        },
-        register: function (state, key, settings) {
-        	var context = this;
-
-            state[key] = {
-                frame: settings.frame,
-                page: 1,
-                page_size: settings.page_size,
-                capacity: settings.capacity,
-                sortering: settings.sortering
-            };
-
-            state.requestor.on('get_' + key, function (e) {
-                state[key].total = e.response.total;
-                if (e.request.range) {
-                    state.cache.write(key, e.response.data, e.request.range);
-                } else {
-                    state.cache.write(key, e.response.data, {from: 0, to: e.response.total});
-                }
-                state.emit(context.get_snapshot(state, key, 0));
-            });
-        }, 
-        get_range: function (state, key) {
-            var context = state[key];
-            return state.pager.range(context.total, context.page_size, context.page);
-        },
-        get_snapshot: function (state, key, mode) {
-        	var context = state[key],
-                total = mode === 2 ? context.l2cache.length : context.total,
-                range = state.pager.range(total, context.page_size, context.page),
-                filtering = mode === 2 ? context.l2filtering : context.filtering,
-                data = mode === 2 ? context.l2cache.slice(range.from, range.to) : state.cache.read_unsafe(key, range);
-                
+    return {
+        create: function(requestor) {
             return {
-                name: 'get_' + key,
-                key: key,
-                mode: mode,
-                filtering: filtering,
-                sortering: {
-                    asc: context.sortering.asc,
-                    key: context.sortering.key
+                requestor: requestor,
+                cache: cache.create(),
+                pager: pager.create(),
+                _filter: filter.create(),
+                sorter: sorter.create(),
+                comparator: comparator.create(),
+                handlers: {},
+                emit: function (event) {
+                    var handlers = this.handlers[event.name];
+
+                    if (handlers) {
+                        for (var index = 0; index < handlers.length; ++index) {
+                           handlers[index](event);
+                        }
+                    }
+                    return this;
                 },
-                page: context.page,
-                page_size: context.page_size,
-                page_count: state.pager.page_count(total, context.page_size),
-                range: range,
-                total: total,
-                data: data,
-                pages: state.pager.pages(total, context.frame, context.page_size, context.page)
-            };
-        },
-        send_request: function (state, key, range) {
-            var context = state[key];
-            state.requestor.get({
-                key: key,
-                filtering: context.filtering,
-                sortering: context.sortering,
-                range: range
-            });
-        },
-        to_page: function (state, key, page) {
-            var context = state[key],
-                range;
+                on: function (name, handler) {
+                    if (this.handlers[name] === undefined) {
+                        this.handlers[name] = [];
+                    }
 
-            context.page = page;
+                    this.handlers[name].push(handler);
+                    return this;
+                },
+                register: function (key, settings) {
+                    var context = this;
 
-            if (context.l2cache) {
-                state.emit(this.get_snapshot(state, key, 2));
-            } else {
-                range = this.get_range(state, key);
-                if (state.cache.contains(key, range)) {
-                    state.emit(this.get_snapshot(state, key, 1));
-                } else {
-                    range = state.cache.coverage(key, range, context.capacity, context.total);
-                    this.send_request(state, key, range);
-                }
-            }
-        },
-        to_next: function (state, key) {
-            var context = state[key];
-            this.to_page(state, key, context.page + 1);
-        },
-        to_previous: function (state, key) {
-            var context = state[key];
-            this.to_page(state, key, context.page - 1);
-        },
-        change_page_size: function (state, key, page_size) {
-            var context = state[key];
-            context.page_size = page_size;
-            this.to_page(state, key, 1);
-        },
-        sort: function (state, key, sortering) {
-            var context = state[key],
-                data,
-                range;
+                    this[key] = {
+                        frame: settings.frame,
+                        page: 1,
+                        page_size: settings.page_size,
+                        capacity: settings.capacity,
+                        sortering: settings.sortering
+                    };
 
-            context.sortering.key = sortering.key;
-            context.sortering.asc = sortering.asc;
+                    this.requestor.on('get_' + key, function (e) {
+                        context[key].total = e.response.total;
+                        if (e.request.range) {
+                            context.cache.write(key, e.response.data, e.request.range);
+                        } else {
+                            context.cache.write(key, e.response.data, {from: 0, to: e.response.total});
+                        }
+                        context.emit(context.get_snapshot(key, 0));
+                    });
 
-            if (context.total && state.cache.contains(key, {from: 0, to: context.total})) {
-                // cache is whole
-                if (context.l2cache) {
-                    data = context.l2cache;
-                } else {
-                    // just returns whole cache buffer
-                    data = state.cache.read_all(key);
-                }
+                    return this;
+                }, 
+                get_range: function (key) {
+                    var context = this[key];
+                    return this.pager.range(context.total, context.page_size, context.page);
+                },
+                get_snapshot: function (key, mode) {
+                    var context = this[key],
+                        total = mode === 2 ? context.l2cache.length : context.total,
+                        range = this.pager.range(total, context.page_size, context.page),
+                        filtering = mode === 2 ? context.l2filtering : context.filtering,
+                        data = mode === 2 ? context.l2cache.slice(range.from, range.to) : this.cache.read_unsafe(key, range);
+                        
+                    return {
+                        name: 'get_' + key,
+                        key: key,
+                        mode: mode,
+                        filtering: filtering,
+                        sortering: {
+                            asc: context.sortering.asc,
+                            key: context.sortering.key
+                        },
+                        page: context.page,
+                        page_size: context.page_size,
+                        page_count: this.pager.page_count(total, context.page_size),
+                        range: range,
+                        total: total,
+                        data: data,
+                        pages: this.pager.pages(total, context.frame, context.page_size, context.page)
+                    };
+                },
+                send_request: function (key, range) {
+                    var context = this[key];
+                    this.requestor.get({
+                        key: key,
+                        filtering: context.filtering,
+                        sortering: context.sortering,
+                        range: range
+                    });
+                },
+                to_page: function (key, page) {
+                    var context = this[key],
+                        range;
 
-                context.l2cache = state.sorter.execute(context.sortering, data);
+                    context.page = page;
 
-                state.emit(this.get_snapshot(state, key));
-            } else {
-                range = this.get_range(state, key);
-                range = state.cache.coverage(key, range, context.capacity, context.total);
-                this.send_request(state, key, range);
-            }
-        },
-        get_f_mode: function (state, key, filtering) {
-            var context = state[key];
-            return context.total && state.cache.contains(key, {from: 0, to: context.total}) && state.comparator.narrower(context.filtering, filtering) ? 2 : 0;
-        },
-        filter: function (state, key, filtering, f_mode) {
-            var context = state[key],
-                mode = f_mode || this.get_f_mode(state, key, filtering),
-                data,
-                range;
+                    if (context.l2cache) {
+                        this.emit(this.get_snapshot(key, 2));
+                    } else {
+                        range = this.get_range(key);
+                        if (this.cache.contains(key, range)) {
+                            this.emit(this.get_snapshot(key, 1));
+                        } else {
+                            range = this.cache.coverage(key, range, context.capacity, context.total);
+                            this.send_request(key, range);
+                        }
+                    }
+                },
+                to_next: function (key) {
+                    var context = this[key];
+                    this.to_page(key, context.page + 1);
+                },
+                to_previous: function (key) {
+                    var context = this[key];
+                    this.to_page(key, context.page - 1);
+                },
+                change_page_size: function (key, page_size) {
+                    var context = this[key];
+                    context.page_size = page_size;
+                    this.to_page(key, 1);
+                },
+                sort: function (key, sortering) {
+                    var context = this[key],
+                        data,
+                        range;
 
-            context.page = 1;
+                    context.sortering.key = sortering.key;
+                    context.sortering.asc = sortering.asc;
 
-            if (mode === 2) {
-                context.l2filtering = filtering;
-                data = state.cache.read_all(key);
-                context.l2cache = state.filter.execute(filtering, data);
-                context.l2cache = state.sorter.execute(context.sortering, context.l2cache);
-                
-                state.emit(this.get_snapshot(state, key, 2));
-            } else {
-                context.filtering = filtering;
-                state.l2cache = null;
+                    if (context.total && this.cache.contains(key, {from: 0, to: context.total})) {
+                        // cache is whole
+                        if (context.l2cache) {
+                            data = context.l2cache;
+                        } else {
+                            // just returns whole cache buffer
+                            data = this.cache.read_all(key);
+                        }
 
-                if (context.capacity) {
-                    range = {
-                        from: 0,
-                        to: Math.max(context.capacity, context.page_size)
+                        context.l2cache = this.sorter.execute(context.sortering, data);
+
+                        this.emit(this.get_snapshot(key));
+                    } else {
+                        range = this.get_range(key);
+                        range = this.cache.coverage(key, range, context.capacity, context.total);
+                        this.send_request(key, range);
+                    }
+                },
+                get_f_mode: function (key, filtering) {
+                    var context = this[key];
+                    return context.total && this.cache.contains(key, {from: 0, to: context.total}) && this.comparator.narrower(context.filtering, filtering) ? 2 : 0;
+                },
+                filter: function (key, filtering, f_mode) {
+                    var context = this[key],
+                        mode = f_mode || this.get_f_mode(key, filtering),
+                        data,
+                        range;
+
+                    context.page = 1;
+
+                    if (mode === 2) {
+                        context.l2filtering = filtering;
+                        data = this.cache.read_all(key);
+                        context.l2cache = this._filter.execute(filtering, data);
+                        context.l2cache = this.sorter.execute(context.sortering, context.l2cache);
+                        
+                        this.emit(this.get_snapshot(key, 2));
+                    } else {
+                        context.filtering = filtering;
+                        this.l2cache = null;
+
+                        if (context.capacity) {
+                            range = {
+                                from: 0,
+                                to: Math.max(context.capacity, context.page_size)
+                            }
+                        }
+
+                        this.send_request(key, range);
                     }
                 }
-
-                this.send_request(state, key, range);
-            }
-        }
-	};
-
+            };    
+        }    
+    };
 });
 

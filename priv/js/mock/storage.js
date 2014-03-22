@@ -5,10 +5,8 @@ if (typeof define !== 'function') {
 define(function (require) {
 	var requestor = require('../mock/requestor');
     return {
-    	__create: function (state) {
-    		return storage.__create({
-    			requestor: requestor.__create(state.buffer)
-    		}).register('members', state.config);
+    	create: function (state) {
+    		return storage.create(requestor.create(state.buffer)).register('members', state.config);
     	}
     };
 });

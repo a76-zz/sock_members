@@ -3,14 +3,14 @@ if (typeof define !== 'function') {
 }
 
 define(function (require) {
-	var filter = require('../core/filter'),
-	    sorter = require('../core/sorter')
+	var filter = require('../core/utility/filter'),
+	    sorter = require('../core/utility/sorter');
 
 	return {
-	    __create: function (buffer) {
+	    create: function (buffer) {
 	    	function SockJS () {
-	            this.filter = filter.__create();   
-	            this.sorter = sorter.__create(); 
+	            this.filter = filter.create();   
+	            this.sorter = sorter.create(); 
 	    	};
 
 	    	SockJS.prototype.send = function (request) {

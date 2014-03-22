@@ -4,26 +4,26 @@ define(function (require) {
             {first_name_s: "Andrei", last_name_s: "Tarkovsky"},
             {first_name_s: "Andrei", last_name_s: "Tamelo"}
         ],
-        storage = require('core/storage'),
-        requestor = require('mock/requestor'),
-        controller = require('controllers/membersController'),
-        __storage = storage.__create({
-            requestor: requestor.__create(buffer)
-        }).register('members', {
-            frame: 1,
-            page_size: 2,
-            sortering: {
-                key: "first_name_s",
-                asc: true,
-                value: function (current) {
-                    return current[this.key];
-                }
+        requestor = require('mock/requestor').create(buffer),
+        storage = require('core/storage').create(requestor),
+        controller = require('controllers/membersController');
+
+
+    storage.register('members', {
+        frame: 1,
+        page_size: 2,
+        sortering: {
+            key: "first_name_s",
+            asc: true,
+            value: function (current) {
+                return current[this.key];
             }
-        });
+        }
+    });
 
     return {
-        GlobalStorage: __storage,
-        MembersController: controller.create(__storage),
+        Storage: storage,
+        MembersController: controller.create(storage),
         MembersRoute: require('routers/membersRouter'),
         MembersFilterView: require('views/membersFilterView'),
         ListSorterIndicatorView: require('views/abstract/listSorterIndicatorView'),

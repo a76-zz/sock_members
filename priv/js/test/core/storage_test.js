@@ -1,5 +1,5 @@
-var storage = require('../../core/storage');
-var requestor = require('../../mock/requestor');
+var _storage = require('../../core/storage');
+var _requestor = require('../../mock/requestor');
 
 var buster = require('/usr/local/lib/node_modules/buster');
 var assert = buster.assert;
@@ -7,20 +7,23 @@ var assert = buster.assert;
 buster.spec.expose();
 
 var create_storage = function (buffer, page_size, capacity) {
-    return storage.__create({
-            requestor: requestor.__create(buffer)
-        }).register('members', {
-            frame: 1,
-            page_size: page_size,
-            capacity: capacity,
-            sortering: {
-                key: "a",
-                asc: true,
-                value: function (current) {
-                    return current[this.key];
-                }
+    var requestor = _requestor.create(buffer),
+        storage = _storage.create(requestor);
+
+    storage.register('members', {
+        frame: 1,
+        page_size: page_size,
+        capacity: capacity,
+        sortering: {
+            key: "a",
+            asc: true,
+            value: function (current) {
+                return current[this.key];
             }
-        });
+        }
+    });
+
+    return storage;
 };
 
 buster.testCase("storage", {

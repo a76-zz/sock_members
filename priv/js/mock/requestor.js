@@ -8,13 +8,13 @@ define(function (require) {
 	    requestor = require('../core/requestor');
 
     return {
-    	__create: function(buffer) {
+    	create: function(buffer) {
 	    	var mock = {
-	            SockJS: sockjs.__create(buffer),
+	            SockJS: sockjs.create(buffer),
 	            JSON: json
 	        };
 
-	        return requestor.__create({}, mock);
+	        return requestor.create("members", mock);
         }
     };
 });

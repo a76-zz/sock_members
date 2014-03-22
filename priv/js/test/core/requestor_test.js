@@ -1,50 +1,42 @@
-var requestor_proto = require('../../core/requestor');
-
+var _requestor = require('../../core/requestor');
+var sockjs = require('../../mock/sockjs');
+var json = require('../../mock/json');
 
 var buster = require('/usr/local/lib/node_modules/buster');
 var assert = buster.assert;
-
-var sockjs_mock = require('../../mock/sockjs');
-var json_mock = require('../../mock/json');
-
-
-
 buster.spec.expose();
 
 buster.testCase("requestor test", {
     get: function () {
-        var e;
+        var response,
+            buffer = [
+                {a: 1},
+                {a: 2},
+                {a: 3},
+                {a: 4},
+                {a: 5},
+                {a: 6},
+                {a: 7},
+                {a: 8},
+                {a: 9},
+                {a: 10}
+            ],
+            mock = {
+                SockJS: sockjs.create(buffer),
+                JSON: json
+            },
+            requestor = _requestor.create("members", mock);
 
-        var buffer = [
-            {a: 1},
-            {a: 2},
-            {a: 3},
-            {a: 4},
-            {a: 5},
-            {a: 6},
-            {a: 7},
-            {a: 8},
-            {a: 9},
-            {a: 10}
-        ];
-
-        var mock = {
-            SockJS: sockjs_mock.__create(buffer),
-            JSON: json_mock
-        };
-
-        var requestor = requestor_proto.__create({}, mock).on('get_members', 
-            function (event) {
-                e = event;
-            }
-        );
+        requestor.on('get_members', function (event) {
+            response = event.response;
+        });
             
-        requestor.get ({
+        requestor.get({
             key: "members",
         	filtering: {a: 9}
         });
 
-        assert.equals(1, e.response.total);
-        assert.equals(9, e.response.data[0].a);    
+        assert.equals(1, response.total);
+        assert.equals(9, response.data[0].a);    
     }    
 });
