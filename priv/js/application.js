@@ -23,12 +23,16 @@ define(function (require) {
 
     return {
         GlobalStorage: __storage,
-        MembersController: controller.__create(__storage),
+        MembersController: controller.create(__storage),
         MembersRoute: require('routers/membersRouter'),
-        MembersItemView: require('views/membersItemView'),
-        SorterIndicatorView: require('views/abstract/sorterIndicatorView'),
-        MembersHeaderItemView: require('views/membersHeaderItemView'),
-        MembersHeaderView: require('views/membersHeaderView')
+        MembersFilterView: require('views/membersFilterView'),
+        ListSorterIndicatorView: require('views/abstract/listSorterIndicatorView'),
+        MembersListSorterView: require('views/membersListSorterView'),
+        MembersListHeaderView: require('views/membersListHeaderView'),
+        MembersListItemView: require('views/membersListItemView'),
+        MembersListPagingView: require('views/membersListPagingView'),
+        MembersListView: require('views/membersListView'),
+        FilterInputView: require('views/abstract/filterInputView')
     };
 }); 
 

@@ -7,61 +7,68 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <script type="text/x-handlebars" data-template-name="members-header-item">
-    <span>{{view.header}}</span> {{view Members.SorterIndicatorView tagName="a" templateName="sorter-indicator" ascClass="asc" descClass="desc" enteredBinding="view.entered" keyBinding="view.key"}}
+  <script type="text/x-handlebars" data-template-name="members-list-sorter">
+    <span>{{view.header}}</span> {{view Members.ListSorterIndicatorView tagName="a" templateName="list-sorter-indicator" ascClass="asc" descClass="desc" enteredBinding="view.entered" keyBinding="view.key"}}
   </script>
 
-  <script type="text/x-handlebars" data-template-name="sorter-indicator">
+  <script type="text/x-handlebars" data-template-name="list-sorter-indicator">
      {{view.title}}
   </script>
 
-  <script type="text/x-handlebars" data-template-name="members-header">
-     {{view Members.MembersHeaderItemView header="First Name" key="first_name_s"}}
-     {{view Members.MembersHeaderItemView header="Last Name" key="last_name_s"}}
+  <script type="text/x-handlebars" data-template-name="members-list-header">
+    <tr>
+      {{view Members.MembersListSorterView header="First Name" key="first_name_s"}}
+      {{view Members.MembersListSorterView header="Last Name" key="last_name_s"}}
+    </tr>
   </script>
 
-  <script type="text/x-handlebars" data-template-name="members-item"> 
+  <script type="text/x-handlebars" data-template-name="members-filter"> 
+     {{input type="text" id="first_name_filter" placeholder="First Name" value=first_name action="filter"}}
+     {{input type="text" id="last_name_filter" placeholder="Last Name" value=last_name action="filter"}}
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="members-list-paging">
+    <div class="p-paging-indexes">
+      <label>Pages:</label>
+      {{#each snapshot.pages}}
+        {{#if splitter}}
+          <span class="p-page-splitter">...</span>
+        {{else}}
+          {{#if active}}
+            <span class="p-page p-selected">{{index}}</span>
+          {{else}}
+            <span class="p-page"><a href="#" {{action to_page index target="controller"}}>{{index}}</a></span>
+          {{/if}}
+        {{/if}}
+      {{/each}}
+    </div>
+    <div>
+    <label for="page_size">Page Size:</label>{{input type="text" id="page_size" value=snapshot.page_size action="change_page_size"}}
+    </div>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="members-list-item"> 
     <td>{{view.item.content.first_name_s}}</td>
     <td>{{view.item.content.last_name_s}}</td>
+  </script>
+
+  <script type="text/x-handlebars" data-template-name="members-list">
+    {{view Members.MembersListHeaderView}}
+    {{#each snapshot.data}}
+      {{view Members.MembersListItemView itemBinding="this"}}
+    {{/each}}
   </script>
 
   <script type="text/x-handlebars" data-template-name="members">
     <h2>Our Members</h2>
     <h3>Filtered by:</h3>
-    <div>
-      {{input type="text" id="first_name_filter" placeholder="First Name" value=first_name action="filter"}}
-    </div>
+    {{view Members.FilterInputView}}
+    {{view Members.MembersFilterView}} 
     {{#unless is_empty}}
       <h3>Searh result:</h3>
-      <table>
-        <thead>
-          {{view Members.MembersHeaderView}}
-        </thead>
-      {{#each snapshot.data}}
-        {{view Members.MembersItemView itemBinding="this"}}
-      {{/each}}
-
-      </table>
-      <div class="p-paging-indexes">
-        <label>Pages:</label>
-        {{#each snapshot.pages}}
-          {{#if splitter}}
-            <span class="p-page-splitter">...</span>
-          {{else}}
-            {{#if active}}
-              <span class="p-page p-selected">{{index}}</span>
-            {{else}}
-              <span class="p-page"><a href="#" {{action to_page index target="controller"}}>{{index}}</a></span>
-            {{/if}}
-          {{/if}}
-        {{/each}}
-      </div>
-      <div>
-      <label for="page_size">Page Size:</label>{{input type="text" id="page_size" value=snapshot.page_size action="change_page_size"}}
-      </div>
-
+      {{view Members.MembersListView}}
+      {{view Members.MembersListPagingView}}
     {{/unless}}
-
   </script>
 
   <script src="js/libs/jquery-1.10.2.js"></script>

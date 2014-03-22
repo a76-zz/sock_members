@@ -1,24 +1,17 @@
-define(function(require) {
-    var navigator = require('../core/navigator');
+define(function (require) {
+    var collectionController = require('../controllers/abstract/collectionController');
 
     return {
-        __create : function (storage) {
-            var result = Ember.Controller.extend(
-                navigator.__create({
-                  key: 'members',
-                  storage: storage
-                })
-            );
-
-            result.reopen({
-                get_filtering: function() {
+        create : function (storage) {
+            return collectionController.extend({
+                key: 'members',
+                storage: storage,
+                get_filtering: function () {
                     return {
                         first_name_s: this.get('first_name')
                     };
                 }
             });
-
-            return result;
         }
-    }
+    };
 });

@@ -1,8 +1,8 @@
 define(function (require) {
-	var listItemView = require('../views/abstract/itemView');
+	var listItemView = require('../views/abstract/listItemView');
 	return listItemView.extend({
 		tagName: "tr",
-		templateName: "members-item",
+		templateName: "members-list-item",
         classNameBindings: ['even:even:odd', 'selected:selected']
 	});
 });
