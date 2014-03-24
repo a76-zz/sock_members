@@ -1,5 +1,6 @@
 define(function (require) {
-    return Ember.View.extend({
+	var listPagingView = require('../views/abstract/listPagingView');
+    return listPagingView.extend({
         tagName: "div",
         templateName: "members-list-paging"
     });	

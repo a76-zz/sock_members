@@ -85,8 +85,7 @@ define(function (require) {
                         page_count: this.pager.page_count(total, context.page_size),
                         range: range,
                         total: total,
-                        data: data,
-                        pages: this.pager.pages(total, context.frame, context.page_size, context.page)
+                        data: data
                     };
                 },
                 send_request: function (key, range) {

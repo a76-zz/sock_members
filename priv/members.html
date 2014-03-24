@@ -30,7 +30,7 @@
   <script type="text/x-handlebars" data-template-name="members-list-paging">
     <div class="p-paging-indexes">
       <label>Pages:</label>
-      {{#each snapshot.pages}}
+      {{#each view.pages}}
         {{#if splitter}}
           <span class="p-page-splitter">...</span>
         {{else}}
@@ -43,7 +43,7 @@
       {{/each}}
     </div>
     <div>
-    <label for="page_size">Page Size:</label>{{input type="text" id="page_size" value=snapshot.page_size action="change_page_size"}}
+    <label for="page_size">Page Size:</label>{{input type="text" value=snapshot.page_size action="change_page_size"}}
     </div>
   </script>
 
@@ -67,6 +67,7 @@
       <h3>Searh result:</h3>
       {{view Members.MembersListView}}
       {{view Members.MembersListPagingView}}
+      {{view Members.MembersListPagingView frame="2"}}
     {{/unless}}
   </script>
 
